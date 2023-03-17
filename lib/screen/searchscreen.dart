@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+// import 'package:flutter/src/widgets/placeholder.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -89,19 +89,6 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ];
               },
-              // onSelected: (value) {
-              //   if (value == 1) {
-              //     Navigator.of(context).push(
-              //       MaterialPageRoute(
-              //           builder: (context) => BottamNavigationScreen()),
-              //     );
-              //   } else if (value == 2) {
-              //     Navigator.of(context).push(
-              //       MaterialPageRoute(
-              //           builder: (context) => BottamNavigationScreen()),
-              //     );
-              //   }
-              // },
             ),
           ),
         ),
@@ -129,36 +116,14 @@ class _SearchScreenState extends State<SearchScreen> {
               padding: const EdgeInsets.all(15.0),
               child: searchTextField(),
             ),
-            // Padding(
-            //   padding: const EdgeInsets.only(top: 100.0),
-            //   child: Opacity(
-            //     opacity: 0.5,
-            //     child: Container(
-            //       height: 300,
-            //       width: 450,
-            //       decoration: BoxDecoration(
-            //         gradient: LinearGradient(colors: [
-            //           Colors.blueGrey.shade300,
-            //           Colors.black,
-            //           Colors.black,
-            //           Colors.black
-            //         ], begin: Alignment.topLeft, end: Alignment.bottomRight),
-            //         color: Colors.black,
-            //         borderRadius: BorderRadius.only(
-            //             bottomLeft: Radius.circular(40),
-            //             bottomRight: Radius.circular(40)),
-            //       ),
-            //     ),
-            //   ),
-            // ),
             Padding(
               padding: const EdgeInsets.only(top: 120.0),
               child: ListView.builder(
                   itemCount: 4,
-                  // physics: NeverScrollableScrollPhysics(),
+                  physics: BouncingScrollPhysics(),
                   itemBuilder: (ctx, index) => customList('music')),
             )
-          ],
+          ],  
         ),
       ),
     );

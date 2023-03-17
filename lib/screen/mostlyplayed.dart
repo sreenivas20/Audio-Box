@@ -90,7 +90,8 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
           ),
         ),
         child: ListView.builder(
-          itemCount: 5,
+          physics: BouncingScrollPhysics(),
+          itemCount: 50,
           itemBuilder: (ctx, index) => customList('music'),
         ),
       ),

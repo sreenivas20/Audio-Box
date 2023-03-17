@@ -75,8 +75,8 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
           ),
           child: Container(
             child: ListView.builder(
-              itemCount: 5,
-              // physics: NeverScrollableScrollPhysics(),
+              itemCount: 20,
+              physics: BouncingScrollPhysics(),
               itemBuilder: (ctx, index) => myListTile(
                   'Music $index',
                   IconButton(

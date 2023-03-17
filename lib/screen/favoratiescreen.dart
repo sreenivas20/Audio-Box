@@ -83,8 +83,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 padding: EdgeInsets.only(top: 10),
                 itemBuilder: (((context, index) {
                   return ListTile(
-                    onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (ctx) => PlayingScreen())),
+                    // onTap: () => Navigator.of(context).push(
+                    //     MaterialPageRoute(builder: (ctx) => PlayingScreen())),
                     title: const Text(
                       'Music',
                       style: TextStyle(color: Colors.white, fontSize: 20),

@@ -1,11 +1,18 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+// import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 // import 'package:musicplayer/homepage.dart';
 
 class PlayingScreen extends StatefulWidget {
-  const PlayingScreen({super.key});
+  PlayingScreen(
+      {super.key, required this.songModel, required this.audioPlayer});
+  final SongModel songModel;
+  final AudioPlayer audioPlayer;
   // static const Color mColor = Color(0x3a376a);
   // static const Color appBarColor = Color.fromARGB(231, 0, 0, 0);
 
@@ -14,9 +21,40 @@ class PlayingScreen extends StatefulWidget {
 }
 
 class _PlayingScreenState extends State<PlayingScreen> {
-  double _currentSliderValue = 50.0;
+  // final AudioPlayer _audioPlayer = AudioPlayer();
+  Duration _duration = const Duration();
+  Duration _position = const Duration();
+  // double _currentSliderValue = 50.0;
   bool _isPlaying = false;
   bool _isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    playSong();
+  }
+
+  void playSong() {
+    try {
+      widget.audioPlayer.setAudioSource(AudioSource.uri(
+        Uri.parse(widget.songModel.uri!),
+      ));
+      widget.audioPlayer.play();
+      _isPlaying = true;
+    } on Exception {
+      log("Cannot parse Song");
+    }
+    widget.audioPlayer.durationStream.listen((d) {
+      setState(() {
+        _duration = d!;
+      });
+    });
+    widget.audioPlayer.positionStream.listen((p) {
+      setState(() {
+        _position = p;
+      });
+    });
+  }
 
   void _onFavoriteButtonPress() {
     setState(() {
@@ -26,6 +64,11 @@ class _PlayingScreenState extends State<PlayingScreen> {
 
   void _onPlayingButtonPress() {
     setState(() {
+      if (_isPlaying) {
+        widget.audioPlayer.pause();
+      } else {
+        widget.audioPlayer.play();
+      }
       _isPlaying = !_isPlaying;
     });
   }
@@ -56,23 +99,11 @@ class _PlayingScreenState extends State<PlayingScreen> {
                   Colors.black
                   // Colors.orange
                 ],
-                // begin: Alignment.bottomRight,
-                // end: Alignment.topRight,
+                begin: Alignment.bottomRight,
+                end: Alignment.topRight,
               ),
             ),
           ),
-          // Opacity(
-          //   opacity: 0.5,
-          //   child: Container(
-          //     height: 300,
-          //     width: 450,
-          //     decoration: const BoxDecoration(
-          //         color: Color(0xFF06062B),
-          //         borderRadius: BorderRadius.only(
-          //             bottomLeft: Radius.circular(40),
-          //             bottomRight: Radius.circular(40))),
-          //   ),
-          // ),
           Positioned(
             top: 100,
             left: 30,
@@ -96,26 +127,24 @@ class _PlayingScreenState extends State<PlayingScreen> {
           Positioned(
             top: 125,
             left: 53,
-            child: Container(
-              child: Column(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(40),
-                    child: Image.asset(
-                      'assets/logo_music_player-removebg-preview.png',
-                      width: 250,
-                      fit: BoxFit.cover,
-                    ),
+            child: Column(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(40),
+                  child: Image.asset(
+                    'assets/logo_music_player-removebg-preview.png',
+                    width: 250,
+                    fit: BoxFit.cover,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          const Positioned(
+          Positioned(
             top: 420,
             left: 50,
             child: Text(
-              'Dusk till Dawn',
+              widget.songModel.displayNameWOExt,
               style: TextStyle(fontSize: 30, color: Colors.white),
             ),
           ),
@@ -144,48 +173,41 @@ class _PlayingScreenState extends State<PlayingScreen> {
           Positioned(
             top: 500,
             left: 30,
-            child: Container(
-              width: 300,
-              child: SliderTheme(
-                data: const SliderThemeData(
-                  trackHeight: 3, // Set the height of the slider's track
-                  thumbShape: RoundSliderThumbShape(
-                    enabledThumbRadius:
-                        7, // Set the radius of the slider's thumb
-                  ),
-                ),
-                child: Slider(
-                  activeColor: Colors.white,
-                  inactiveColor: Colors.blueGrey.shade700,
-                  value: _currentSliderValue,
-                  min: 0,
-                  max: 100,
+            child: SizedBox(
+              width: 316,
+              // height: 200,
+              child: Slider.adaptive(
+                activeColor: Colors.white,
+                inactiveColor: Colors.blueGrey.shade700,
+                min: Duration(microseconds: 0).inSeconds.toDouble(),
+                value: _position.inSeconds.toDouble(),
+                // value: 0.5,
+                max: _duration.inSeconds.toDouble(),
 
-                  // divisions: 5,
-                  label: _currentSliderValue.round().toString(),
-                  onChanged: (double value) {
-                    setState(() {
-                      _currentSliderValue = value;
-                    });
-                  },
-                ),
+                onChanged: (value) {
+                  setState(() {
+                    changeToSeconds(value.toInt());
+                    value = value;
+                    // _position = Duration(seconds: value.toInt());
+                  });
+                },
               ),
             ),
           ),
           Positioned(
-            top: 532,
-            left: 58,
+            top: 542,
+            left: 50,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
-              children: const [
-                Text('1.20',
-                    style: TextStyle(fontSize: 10, color: Colors.white)),
+              children: [
+                Text(_position.toString().split(".")[0],
+                    style: const TextStyle(fontSize: 10, color: Colors.white)),
                 SizedBox(
                   width: 210,
                 ),
-                Text('2.34',
-                    style: TextStyle(fontSize: 10, color: Colors.white))
+                Text(_duration.toString().split(".")[0],
+                    style: const TextStyle(fontSize: 10, color: Colors.white))
               ],
             ),
           ),
@@ -251,5 +273,10 @@ class _PlayingScreenState extends State<PlayingScreen> {
         ],
       ),
     );
+  }
+
+  void changeToSeconds(int seconds) {
+    Duration duration = Duration(seconds: seconds);
+    widget.audioPlayer.seek(duration);
   }
 }
