@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:musicplayer/db_funtion/songdb_model.dart';
 import 'package:musicplayer/screen/bottamnavigationbar.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 // import 'package:musicplayer/bottamnavigationbar.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -13,10 +16,41 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
-  void initState() { 
+  void initState() {
     super.initState();
+    requestStoragePermission();
+  }
 
-    Future.delayed(const Duration(seconds: 2), () {
+  final _audioQuery = new OnAudioQuery();
+  // final AudioPlayer _audioPlayer = AudioPlayer();
+  final box = SongBox.getInstance();
+
+  List<SongModel> songsFetched = [];
+  List<SongModel> allSong = [];
+
+  requestStoragePermission() async {
+    bool permissionStatus = await _audioQuery.permissionsStatus();
+    if (!permissionStatus) {
+      await _audioQuery.permissionsRequest();
+
+      songsFetched = await _audioQuery.querySongs();
+      for (var element in songsFetched) {
+        if (element.fileExtension == "mp3") {
+          allSong.add(element);
+        }
+      }
+
+      for (var element in allSong) {
+        await box.add(Songs(
+            songname: element.title,
+            artist: element.artist,
+            duration: element.duration,
+            songUrl: element.uri,
+            id: element.id));
+      }
+    }
+
+    Future.delayed(const Duration(milliseconds: 200), () {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(

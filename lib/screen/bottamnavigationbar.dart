@@ -53,72 +53,60 @@ class _BottamNavigationScreenState extends State<BottamNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       body: _pages[_selectedPageindex]['pages'],
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 1.5,
-        clipBehavior: Clip.antiAlias,
-        child: Container(
-          color: const Color(0x0006062b),
-          height: kBottomNavigationBarHeight * 0.98,
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(0, 8, 8, 199),
-              border: Border(
-                top: BorderSide(
-                  // color: Color(0x0006062b),
-                  width: 0,
-                ),
-              ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(0.0),
+        child: BottomNavigationBar(
+          selectedFontSize: 0.0,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          onTap: _selectpage,
+          backgroundColor: Colors.black,
+          unselectedItemColor: Color.fromARGB(255, 28, 53, 64),
+          selectedItemColor: Colors.white,
+          currentIndex: _selectedPageindex,
+          items: const [
+            BottomNavigationBarItem(
+              label: 'Home',
+              icon: Icon(Icons.home),
             ),
-            child: BottomNavigationBar(
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
-              onTap: _selectpage,
-              backgroundColor: Colors.black,
-              unselectedItemColor: const Color.fromARGB(255, 19, 36, 44),
-              selectedItemColor: Colors.white,
-              currentIndex: _selectedPageindex,
-              items: const [
-                BottomNavigationBarItem(
-                  label: 'Home',
-                  icon: Icon(Icons.home),
-                ),
-                // BottomNavigationBarItem(
-                //   label: 'Liked Songs',
-                //   icon: Icon(Icons.favorite_outline),
-                // ),
-                BottomNavigationBarItem(
-                  activeIcon: null,
-                  label: 'Search',
-                  icon: Icon(null),
-                ),
-                // BottomNavigationBarItem(
-                //   label: 'Playlist',
-                //   icon: Icon(Icons.playlist_add),
-                // ),
-                BottomNavigationBarItem(
-                  label: 'Lyibrary',
-                  // activeIcon: null,
-                  icon: Icon(Icons.library_books_rounded),
-                ),
-              ],
+            // BottomNavigationBarItem(
+            //   label: 'Liked Songs',
+            //   icon: Icon(Icons.favorite_outline),
+            // ),
+            BottomNavigationBarItem(
+              activeIcon: null,
+              label: 'Search',
+              icon: Icon(null),
             ),
-          ),
+            // BottomNavigationBarItem(
+            //   label: 'Playlist',
+            //   icon: Icon(Icons.playlist_add),
+            // ),
+            BottomNavigationBarItem(
+              label: 'Lyibrary',
+              // activeIcon : null,
+              icon: Icon(Icons.library_books_rounded),
+            ),
+          ],
         ),
       ),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterDocked,
       floatingActionButton: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(0.0),
         child: FloatingActionButton(
+          shape: CircleBorder(),
           backgroundColor: Colors.blueGrey.shade800,
           hoverElevation: 20,
           splashColor: Colors.black,
           tooltip: 'Search',
           elevation: 0,
-          child: const Icon(Icons.search),
+          child: const Icon(
+            Icons.search,
+            color: Colors.white,
+          ),
           onPressed: () => setState(
             () {
               _selectedPageindex = 1;

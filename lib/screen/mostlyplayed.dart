@@ -10,9 +10,17 @@ class MostlyPlayedScreen extends StatefulWidget {
 }
 
 class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
+  bool _isFavorite = false;
+
+  void _onFavoriteButtonPress() {
+    setState(() {
+      _isFavorite = !_isFavorite;
+    });
+  }
+
   Widget customList(musicName) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10.0, left: 15),
+      padding: const EdgeInsets.only(top: 12.0, left: 15, right: 20),
       child: Container(
         width: 320,
         height: 70,
@@ -43,20 +51,35 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
               musicName,
               style: TextStyle(color: Colors.white),
             ),
-            trailing: PopupMenuButton(
-              itemBuilder: (context) {
-                return [
-                  const PopupMenuItem(
-                    value: 1,
-                    child: Text('Remove songs'),
-                  ),
-                ];
-              },
-              onSelected: (value) {
-                if (value == 1) {
-                  removeBox();
-                }
-              },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                    onPressed: _onFavoriteButtonPress,
+                    icon: Icon(
+                      _isFavorite
+                          ? Icons.favorite
+                          : Icons.favorite_border_outlined,
+                      color: Colors.white,
+                      // size: ,
+                    )),
+                PopupMenuButton(
+                  color: Colors.white,
+                  itemBuilder: (context) {
+                    return [
+                      const PopupMenuItem(
+                        value: 1,
+                        child: Text('Remove songs'),
+                      ),
+                    ];
+                  },
+                  onSelected: (value) {
+                    if (value == 1) {
+                      removeBox();
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         ),
@@ -101,7 +124,7 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
   void removeBox() {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog( shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text("Remove song "),
         content: const Text('Are you sure'),
         actions: <Widget>[

@@ -28,32 +28,36 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  animated_notch_bottom_bar: ^0.0.6
+  animated_text_kit: ^4.2.2
+  assets_audio_player: ^3.0.6
+  audio_video_progress_bar: ^1.0.1
+  cupertino_icons: ^1.0.2
+  dependencies: null
   flutter:
     sdk: flutter
-  dependencies:
-
-  animated_notch_bottom_bar: ^0.0.6
   flutter_advanced_drawer: ^1.3.4
+  flutter_marquee: ^2.0.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  just_audio: ^0.9.32
+  just_audio_background: ^0.0.1-beta.9
+  liquid_pull_to_refresh: ^3.0.1
+  marquee: ^2.2.3
+  marquee_text: ^2.5.0+1
   on_audio_query: ^2.6.0
   permission_handler: ^10.2.0
-  just_audio: ^0.9.31
-  
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
+  provider: ^6.0.5
+  share_plus: ^6.3.1
+  text_scroll: ^0.2.0
 
 dev_dependencies:
-  flutter_launcher_icons: "^0.12.0"
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
+  build_runner: ^2.3.3
+  flutter_launcher_icons: ^0.12.0
   flutter_lints: ^2.0.0
   flutter_test:
     sdk: flutter
+  hive_generator: ^2.0.0
 flutter_icons:
   android: true
   ios: true
@@ -74,7 +78,6 @@ flutter_icons:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter packages.
 flutter:
 
@@ -95,13 +98,10 @@ flutter:
     - assets/search.svg
     - assets/logo_music_player-removebg-preview.png
     - assets/recently-played.png
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
-
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
-
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a

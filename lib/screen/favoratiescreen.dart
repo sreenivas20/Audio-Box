@@ -1,8 +1,13 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:musicplayer/db_funtion/favorate_db_model.dart';
+import 'package:musicplayer/screen/functions/addtofavourites.dart';
+import 'package:musicplayer/screen/homescreen.dart';
 import 'package:musicplayer/screen/playingscreen.dart';
-// import 'package:musicplayer/playingscreen.dart';
+import 'package:on_audio_query/on_audio_query.dart';
+
+
 
 class FavoriteScreen extends StatefulWidget {
   FavoriteScreen({super.key});
@@ -11,13 +16,35 @@ class FavoriteScreen extends StatefulWidget {
   State<FavoriteScreen> createState() => _FavoriteScreenState();
 }
 
-class _FavoriteScreenState extends State<FavoriteScreen> {
-  bool _isFavorite = false;
+final _audioPlayer = AssetsAudioPlayer.withId('0');
 
-  void _onFavoriteButtonPress() {
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
+class _FavoriteScreenState extends State<FavoriteScreen> {
+  final List<Favourites> favourite = [];
+  final box = FavSongBox.getInstance();
+  late List<Favourites> favouritesongs = box.values.toList();
+  bool isalready = true;
+  List<Audio> favSongs = [];
+
+  int currentIndex = 0;
+
+  @override
+  void initState() {
+    final List<Favourites> favouritesongs1 =
+        box.values.toList().reversed.toList();
+    for (var element in favouritesongs1) {
+      favSongs.add(
+        Audio.file(
+          element.songUrl.toString(),
+          metas: Metas(
+            artist: element.artist,
+            title: element.songname,
+            id: element.id.toString(),
+          ),
+        ),
+      );
+    }
+    setState(() {});
+    super.initState();
   }
 
   @override
@@ -27,10 +54,16 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: const Text('Liked Songs'),
+        title: const Text(
+          'Liked Songs',
+          style: TextStyle(color: Colors.white),
+        ),
         leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.arrow_back_ios)),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
       ),
       body: Stack(
         children: [
@@ -43,20 +76,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               Colors.black
             ], begin: Alignment.topLeft, end: Alignment.bottomRight)),
           ),
-          // Opacity(
-          //   opacity: 0.5,
-          //   child: Container(
-          //     height: 300,
-          //     width: 450,
-          //     decoration: const BoxDecoration(
-          //         color: Color(0xFF06062B),
-          //         borderRadius: BorderRadius.only(
-          //             bottomLeft: Radius.circular(40),
-          //             bottomRight: Radius.circular(40))),
-          //   ),
-          // ),
           Padding(
-            padding: const EdgeInsets.only(top: 130, left: 20),
+            padding: const EdgeInsets.only(top: 120, left: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -65,12 +86,13 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   style: TextStyle(color: Colors.white, fontSize: 26),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 40, bottom: 28),
+                  padding:
+                      const EdgeInsets.only(top: 20, right: 10, bottom: 28),
                   child: IconButton(
                       onPressed: () {},
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.play_circle_filled,
-                        color: Colors.blueGrey.shade800,
+                        color: Colors.white,
                         size: 60,
                       )),
                 )
@@ -79,42 +101,151 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 200),
-            child: ListView.separated(
-                padding: EdgeInsets.only(top: 10),
-                itemBuilder: (((context, index) {
-                  return ListTile(
-                    // onTap: () => Navigator.of(context).push(
-                    //     MaterialPageRoute(builder: (ctx) => PlayingScreen())),
-                    title: const Text(
-                      'Music',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                    ),
-                    trailing: IconButton(
-                        onPressed: _onFavoriteButtonPress,
-                        icon: Icon(
-                          _isFavorite ? Icons.favorite : Icons.favorite_outline,
-                          color: Colors.white,
-                        )),
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        'assets/logo music player.png',
-                        width: 65,
-                        height: 50,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  );
-                })),
-                separatorBuilder: (((context, index) {
-                  return const Divider(
-                    thickness: 0.1,
-                  );
-                })),
-                itemCount: 20),
+            child: ValueListenableBuilder<Box<Favourites>>(
+                valueListenable: box.listenable(),
+                builder: (context, favouriteDb, child) {
+                  List<Favourites> favouritesongs =
+                      favouriteDb.values.toList().reversed.toList();
+                  return favouritesongs.isNotEmpty
+                      ? (ListView.builder(
+                          padding: const EdgeInsets.only(top: 12),
+                          shrinkWrap: true,
+                          itemCount: favouritesongs.length,
+                          physics: const BouncingScrollPhysics(),
+                          itemBuilder: ((context, index) => Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: customList(
+                                    favouritesongs[index].songname!,
+                                    QueryArtworkWidget(
+                                      id: favouritesongs[index].id!,
+                                      type: ArtworkType.AUDIO,
+                                      nullArtworkWidget: ClipRRect(
+                                        child: Image.asset(
+                                            'assets/logo_music_player-removebg-preview.png'),
+                                      ),
+                                    ),
+                                    favouritesongs[index].artist ??
+                                        " No Artist",
+                                    index),
+                              )),
+                        ))
+                      : const Center(
+                          child: Text(
+                            "You haven't Liked any songs!",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+                }),
           )
         ],
       ),
     );
   }
+
+  Widget customList(String? musicName, imagecover, String sub, index) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 15, right: 15),
+      child: Container(
+        width: 290,
+        height: 80,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: const LinearGradient(
+            colors: [
+              Color.fromARGB(255, 25, 35, 40),
+              Color.fromARGB(255, 24, 33, 38),
+              Colors.transparent,
+            ],
+          ),
+        ),
+        child: Center(
+          child: ListTile(
+            onTap: () {
+              PlayingScreen.playingNowIndex.value = index;
+
+              _audioPlayer.open(Playlist(audios: favSongs, startIndex: index),
+                  showNotification: true,
+                  headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplug,
+                  loopMode: LoopMode.playlist);
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (ctx) => PlayingScreen()));
+              // setState(() {});
+            },
+            leading: imagecover,
+            title: Text(
+              musicName!,
+              style: const TextStyle(
+                  color: Colors.white, overflow: TextOverflow.ellipsis),
+            ),
+            subtitle: Text(
+              sub,
+              style: const TextStyle(
+                color: Colors.white,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        deleteFavSongs(index, context);
+
+                       
+                      });
+                      final snackBar = SnackBar(
+                        duration: const Duration(seconds: 1),
+                        content: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: const [
+                              Icon(
+                                Icons.favorite,
+                                color: Colors.white,
+                              ),
+                              Text(
+                                'Removed from Favouraites',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        backgroundColor: Colors.black,
+                        dismissDirection: DismissDirection.down,
+                        elevation: 10,
+                        padding: const EdgeInsets.only(top: 10, bottom: 15),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    )),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // onPlay() {
+  //   final List<Favourites> favouritesongs1 =
+  //       box.values.toList().reversed.toList();
+  //   for (var element in favouritesongs1) {
+  //     favSongs.add(
+  //       Audio.file(
+  //         element.songUrl.toString(),
+  //         metas: Metas(
+  //           artist: element.artist,
+  //           title: element.songname,
+  //           id: element.id.toString(),
+  //         ),
+  //       ),
+  //     );
+  //   }
+  // }
 }
