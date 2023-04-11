@@ -1,10 +1,12 @@
 import 'dart:developer';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:musicplayer/db_funtion/all_db_functions.dart';
+import 'package:musicplayer/db_funtion/mostlyplayed.dart';
 import 'package:musicplayer/db_funtion/playlistmodel.dart';
 import 'package:musicplayer/db_funtion/recentlyplayed.dart';
 import 'package:musicplayer/db_funtion/songdb_model.dart';
@@ -16,6 +18,7 @@ import 'package:musicplayer/screen/playlistscrren.dart';
 import 'package:musicplayer/screen/recentlyplayed.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:musicplayer/screen/splashscreen.dart';
 
 import 'mostlyplayed.dart';
 
@@ -34,6 +37,7 @@ final alldbsongs = SongBox.getInstance();
 List<Songs> allDbSongs = alldbsongs.values.toList();
 final songbox = SongBox.getInstance();
 final AssetsAudioPlayer audioPlayer2 = AssetsAudioPlayer.withId('0');
+List<MostPlayed> allmostplayedsong = mostPlayedSongs.values.toList();
 
 class _HomePageState extends State<HomePage> {
   final playlistbox = PlaylistSongsbox.getInstance();
@@ -92,16 +96,25 @@ class _HomePageState extends State<HomePage> {
   // final AudioPlayer _audioPlayer = AudioPlayer();
   List<SongModel> allSongs = [];
 
-  void _onFavoriteButtonPress() {
-    setState(() {
-      isFavorite = !isFavorite;
-    });
-  }
+  // void _onFavoriteButtonPress() {
+  //   setState(() {
+  //     isFavorite = !isFavorite;
+  //   });
+  // }
 
   var size, height, width;
 
   Widget customList(
-      String? musicName, imagecover, String sub, index, allDbsongs, rsongs) {
+    String? musicName,
+    imagecover,
+    String sub,
+    index,
+    allDbsongs,
+    rsongs,
+    mostsong,
+  ) {
+    // MostPlayed mostsong = allmostplayedsong[index];
+    log('error');
     Songs songs = allDbsongs[index];
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 0),
@@ -131,8 +144,8 @@ class _HomePageState extends State<HomePage> {
                   showNotification: true,
                   loopMode: LoopMode.playlist);
               // setState(() {});
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (ctx) => PlayingScreen()));
+              Navigator.of(context).push(CupertinoPageRoute(
+                  fullscreenDialog: true, builder: (ctx) => PlayingScreen()));
               rsongs = RecentlyPlayed(
                   id: songs.id,
                   artist: songs.artist,
@@ -141,6 +154,7 @@ class _HomePageState extends State<HomePage> {
                   songname: songs.songname,
                   index: index);
               recentlyPlayedFunction(rsongs);
+              updateSongPlayedCount(mostsong, index);
             },
             leading: imagecover,
             title: Text(
@@ -545,9 +559,10 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: LiquidPullToRefresh(
+        borderWidth: 2.0,
         color: Colors.white,
         backgroundColor: Colors.black,
-        height: 300,
+        height: 100,
         onRefresh: handleRefresh,
         child: Stack(children: [
           Container(
@@ -763,14 +778,18 @@ class _HomePageState extends State<HomePage> {
                       child: ValueListenableBuilder<Box<Songs>>(
                           valueListenable: songbox.listenable(),
                           builder: ((context, allsongbox, child) {
+                            log('error song');
                             List<Songs> allDbsongs = allsongbox.values.toList();
+
                             return ListView.builder(
                               padding: EdgeInsets.only(top: 10),
                               physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: allDbsongs.length,
                               itemBuilder: ((context, index) {
+                                log('song index');
                                 RecentlyPlayed? rsongs;
+                                MostPlayed mostsong = allmostplayedsong[index];
 
                                 return Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -787,7 +806,8 @@ class _HomePageState extends State<HomePage> {
                                       allDbsongs[index].artist ?? "No Artist",
                                       index,
                                       allDbsongs,
-                                      rsongs),
+                                      rsongs,
+                                      mostsong),
                                 );
                               }),
                             );

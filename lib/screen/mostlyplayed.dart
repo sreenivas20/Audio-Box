@@ -1,6 +1,11 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:musicplayer/db_funtion/mostlyplayed.dart';
+import 'package:on_audio_query/on_audio_query.dart';
+import 'package:text_scroll/text_scroll.dart';
 
 class MostlyPlayedScreen extends StatefulWidget {
   const MostlyPlayedScreen({super.key});
@@ -10,20 +15,41 @@ class MostlyPlayedScreen extends StatefulWidget {
 }
 
 class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
-  bool _isFavorite = false;
+  final box = MostPlayedBox.getInstance();
+  final AssetsAudioPlayer _audioPlayerMost = AssetsAudioPlayer.withId('0');
+  List<Audio> songs = [];
 
-  void _onFavoriteButtonPress() {
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
+  @override
+  void initState() {
+    List<MostPlayed> songlist = box.values.toList();
+
+    int i = 0;
+    for (var item in songlist) {
+      if (item.count > 4) {
+        mostfinalsong.insert(i, item);
+        i++;
+      }
+    }
+
+    for (var item in mostfinalsong) {
+      songs.add(Audio.file(item.songurl,
+          metas: Metas(
+              title: item.songname,
+              artist: item.artist,
+              id: item.id.toString())));
+    }
+
+    super.initState();
   }
 
-  Widget customList(musicName) {
+  List<MostPlayed> mostfinalsong = [];
+
+  Widget customList(cover, musicName, sub, mostIndex) {
     return Padding(
       padding: const EdgeInsets.only(top: 12.0, left: 15, right: 20),
       child: Container(
         width: 320,
-        height: 70,
+        height: 80,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           gradient: const LinearGradient(
@@ -38,49 +64,51 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
         ),
         child: Center(
           child: ListTile(
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                'assets/logo music player.png',
-                width: 65,
-                height: 50,
-                fit: BoxFit.cover,
-              ),
-            ),
-            title: Text(
+            onTap: () {
+              _audioPlayerMost.open(
+                Playlist(audios: songs, startIndex: mostIndex),
+                headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplugPlayOnPlug,
+                showNotification: true,
+              );
+            },
+            leading: cover,
+            title: TextScroll(
               musicName,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                    onPressed: _onFavoriteButtonPress,
-                    icon: Icon(
-                      _isFavorite
-                          ? Icons.favorite
-                          : Icons.favorite_border_outlined,
-                      color: Colors.white,
-                      // size: ,
-                    )),
-                PopupMenuButton(
-                  color: Colors.white,
-                  itemBuilder: (context) {
-                    return [
-                      const PopupMenuItem(
-                        value: 1,
-                        child: Text('Remove songs'),
-                      ),
-                    ];
-                  },
-                  onSelected: (value) {
-                    if (value == 1) {
-                      removeBox();
-                    }
-                  },
-                ),
-              ],
-            ),
+            subtitle:
+                TextScroll(sub, style: const TextStyle(color: Colors.white)),
+
+            // trailing: Row(
+            //   mainAxisSize: MainAxisSize.min,
+            //   children: [
+            //     IconButton(
+            //         onPressed: _onFavoriteButtonPress,
+            //         icon: Icon(
+            //           _isFavorite
+            //               ? Icons.favorite
+            //               : Icons.favorite_border_outlined,
+            //           color: Colors.white,
+            //           // size: ,
+            //         )),
+            //     PopupMenuButton(
+            //       color: Colors.white,
+            //       itemBuilder: (context) {
+            //         return [
+            //           const PopupMenuItem(
+            //             value: 1,
+            //             child: Text('Remove songs'),
+            //           ),
+            //         ];
+            //       },
+            //       onSelected: (value) {
+            //         if (value == 1) {
+            //           removeBox();
+            //         }
+            //       },
+            //     ),
+            //   ],
+            // ),
           ),
         ),
       ),
@@ -90,13 +118,19 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Mostly played'),
+        title: const Text(
+          'Mostly played',
+          style: TextStyle(color: Colors.white),
+        ),
         leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.arrow_back_ios)),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
         backgroundColor: Colors.transparent,
       ),
       body: Container(
@@ -110,49 +144,82 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
               Colors.black,
               Colors.black
             ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
-        child: ListView.builder(
-          physics: BouncingScrollPhysics(),
-          itemCount: 50,
-          itemBuilder: (ctx, index) => customList('music'),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 18.0, right: 8, left: 8),
+          child: ValueListenableBuilder(
+            valueListenable: box.listenable(),
+            builder: (context, Box<MostPlayed> mostplayedDB, child) {
+              List<MostPlayed> mostplayedsong = mostplayedDB.values.toList();
+
+              return mostfinalsong.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: mostfinalsong.length,
+                      itemBuilder: ((context, mostIndex) => customList(
+                          QueryArtworkWidget(
+                            id: mostfinalsong[mostIndex].id,
+                            type: ArtworkType.AUDIO,
+                            nullArtworkWidget: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.asset(
+                                'assets/logo_music_player-removebg-preview.png',
+                              ),
+                            ),
+                          ),
+                          mostfinalsong[mostIndex].songname,
+                          mostfinalsong[mostIndex].artist,
+                          mostIndex)))
+                  : const Padding(
+                      padding: EdgeInsets.only(top: 100),
+                      child: Center(
+                        child: Text(
+                          "Your most played songs will appear here!",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    );
+            },
+          ),
         ),
       ),
     );
   }
 
-  void removeBox() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog( shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("Remove song "),
-        content: const Text('Are you sure'),
-        actions: <Widget>[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-                child: const Text(
-                  "Cancel",
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-                child: const Text(
-                  "Remove",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  // void removeBox() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (ctx) => AlertDialog( shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+  //       title: const Text("Remove song "),
+  //       content: const Text('Are you sure'),
+  //       actions: <Widget>[
+  //         Row(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             TextButton(
+  //               onPressed: () {
+  //                 Navigator.of(ctx).pop();
+  //               },
+  //               child: const Text(
+  //                 "Cancel",
+  //                 style: TextStyle(color: Colors.blue),
+  //               ),
+  //             ),
+  //             TextButton(
+  //               onPressed: () {
+  //                 Navigator.of(ctx).pop();
+  //               },
+  //               child: const Text(
+  //                 "Remove",
+  //                 style: TextStyle(color: Colors.red),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

@@ -48,7 +48,6 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
     super.initState();
   }
 
-
   Widget customList(cover, musicName, sub, recentIndex) {
     return Padding(
       padding: const EdgeInsets.only(top: 12.0, left: 15, right: 20),
@@ -86,27 +85,27 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
               sub,
               style: TextStyle(color: Colors.white),
             ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                PopupMenuButton(
-                  color: Colors.white,
-                  itemBuilder: (context) {
-                    return [
-                      const PopupMenuItem(
-                        value: 1,
-                        child: Text('Remove songs'),
-                      ),
-                    ];
-                  },
-                  onSelected: (value) {
-                    if (value == 1) {
-                      removeBox();
-                    }
-                  },
-                ),
-              ],
-            ),
+            // trailing: Row(
+            //   mainAxisSize: MainAxisSize.min,
+            //   children: [
+            //     PopupMenuButton(
+            //       color: Colors.white,
+            //       itemBuilder: (context) {
+            //         return [
+            //           const PopupMenuItem(
+            //             value: 1,
+            //             child: Text('Remove songs'),
+            //           ),
+            //         ];
+            //       },
+            //       onSelected: (value) {
+            //         if (value == 1) {
+            //           removeBox();
+            //         }
+            //       },
+            //     ),
+            //   ],
+            // ),
           ),
         ),
       ),
@@ -123,8 +122,8 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: const Text(
           'Recently Played',

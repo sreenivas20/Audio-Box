@@ -82,7 +82,6 @@ class _PlayingScreenState extends State<PlayingScreen> {
                   Colors.black,
                   Colors.black,
                   Colors.black
-                  
                 ],
                 begin: Alignment.bottomRight,
                 end: Alignment.topRight,
@@ -157,15 +156,12 @@ class _PlayingScreenState extends State<PlayingScreen> {
                                       audioPlayer2.getCurrentAudioTitle,
                                     ),
                                   ),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        audioPlayer2.getCurrentAudioArtist,
-                                        style: const TextStyle(
-                                            color: Colors.white, fontSize: 20),
-                                      ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: TextScroll(
+                                      audioPlayer2.getCurrentAudioArtist,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 20),
                                     ),
                                   ),
                                   Padding(
@@ -203,10 +199,6 @@ class _PlayingScreenState extends State<PlayingScreen> {
                                                   color: Colors.white,
                                                 ),
                                         ),
-                                        IconButton(
-                                            onPressed: () {},
-                                            icon: const Icon(Icons.playlist_add,
-                                                color: Colors.white))
                                       ],
                                     ),
                                   ),
@@ -292,31 +284,26 @@ class _PlayingScreenState extends State<PlayingScreen> {
                                             // const SizedBox(
                                             //   width: 8,
                                             // ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 10),
-                                              child: IconButton(
-                                                  onPressed: () async {
-                                                    if (isPlaying) {
-                                                      await audioPlayer2
-                                                          .pause();
-                                                    } else {
-                                                      await audioPlayer2.play();
-                                                    }
-                                                    setState(() {
-                                                      isPlaying = !isPlaying;
-                                                    });
-                                                  },
-                                                  icon: Icon(
-                                                    isPlaying
-                                                        ? Icons
-                                                            .pause_circle_filled
-                                                        : Icons
-                                                            .play_circle_filled,
-                                                    color: Colors.white,
-                                                    size: 58,
-                                                  )),
-                                            ),
+                                            IconButton(
+                                                onPressed: () async {
+                                                  if (isPlaying) {
+                                                    await audioPlayer2.pause();
+                                                  } else {
+                                                    await audioPlayer2.play();
+                                                  }
+                                                  setState(() {
+                                                    isPlaying = !isPlaying;
+                                                  });
+                                                },
+                                                icon: Icon(
+                                                  isPlaying
+                                                      ? Icons
+                                                          .pause_circle_filled
+                                                      : Icons
+                                                          .play_circle_filled,
+                                                  color: Colors.white,
+                                                  size: 58,
+                                                )),
                                             const SizedBox(
                                               width: 0,
                                               height: 30,
