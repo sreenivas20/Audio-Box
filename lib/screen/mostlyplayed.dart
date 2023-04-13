@@ -1,9 +1,8 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:musicplayer/db_funtion/mostlyplayed.dart';
+import 'package:musicplayer/screen/nowplaying_slider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:text_scroll/text_scroll.dart';
 
@@ -25,7 +24,7 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
 
     int i = 0;
     for (var item in songlist) {
-      if (item.count > 4) {
+      if (item.count > 3) {
         mostfinalsong.insert(i, item);
         i++;
       }
@@ -46,7 +45,7 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
 
   Widget customList(cover, musicName, sub, mostIndex) {
     return Padding(
-      padding: const EdgeInsets.only(top: 12.0, left: 15, right: 20),
+      padding: const EdgeInsets.only(top: 12.0, left: 10, right: 10),
       child: Container(
         width: 320,
         height: 80,
@@ -185,6 +184,7 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
           ),
         ),
       ),
+      bottomSheet: NowPlayingSlider(),
     );
   }
 

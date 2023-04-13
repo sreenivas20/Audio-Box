@@ -13,12 +13,14 @@ import 'package:musicplayer/db_funtion/songdb_model.dart';
 import 'package:musicplayer/screen/favoratiescreen.dart';
 import 'package:musicplayer/screen/functions/addtofavourites.dart';
 import 'package:musicplayer/screen/functions/createplaylist.dart';
+import 'package:musicplayer/screen/nowplaying_slider.dart';
 import 'package:musicplayer/screen/playingscreen.dart';
 import 'package:musicplayer/screen/playlistscrren.dart';
+import 'package:musicplayer/screen/popup.dart';
 import 'package:musicplayer/screen/recentlyplayed.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:musicplayer/screen/splashscreen.dart';
+// import 'package:musicplayer/screen/splashscreen.dart';
 
 import 'mostlyplayed.dart';
 
@@ -153,8 +155,9 @@ class _HomePageState extends State<HomePage> {
                   songurl: songs.songUrl,
                   songname: songs.songname,
                   index: index);
+              NowPlayingSlider.enteredvalue.value = index;
               recentlyPlayedFunction(rsongs);
-              updateSongPlayedCount(mostsong, index);
+              updateSongPlayedCount(mostsong);
             },
             leading: imagecover,
             title: Text(
@@ -181,6 +184,7 @@ class _HomePageState extends State<HomePage> {
                           HeadPhoneStrategy.pauseOnUnplugPlayOnPlug,
                       showNotification: true,
                     );
+                    
                   },
                   // ignore: prefer_const_constructors
                   icon: Icon(
@@ -467,6 +471,7 @@ class _HomePageState extends State<HomePage> {
     width = size.width;
 
     return Scaffold(
+      // bottomSheet: NowPlayingSlider(),
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -489,7 +494,7 @@ class _HomePageState extends State<HomePage> {
           // padding: const EdgeInsets.only(top: 50),
           children: [
             Container(
-              height: height * .10,
+              height: 60,
               decoration: BoxDecoration(color: Colors.blueGrey.shade900),
               child: const Center(
                 child: Text(
@@ -499,7 +504,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const Divider(
-              thickness: 5,
+              thickness: 1,
             ), //DrawerHeader
             ListTile(
               leading: const Icon(Icons.privacy_tip, color: Colors.white),
@@ -508,7 +513,14 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
-                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (builder) {
+                      return Settingmenupopup(
+                        mdFilename: 'privacypolicy.md',
+                      );
+                    });
+                // Navigator.pop(context);
               },
             ),
             ListTile(
@@ -518,7 +530,26 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
-                Navigator.pop(context);
+                showAboutDialog(
+                    context: context,
+                    applicationName: "Audio Box.",
+                    applicationIcon: Image.asset(
+                      "assets/logo_music_player-removebg-preview.png",
+                      height: 70,
+                      width: 70,
+                    ),
+                    applicationVersion: "1.0.0",
+                    children: [
+                      const Text(
+                        "Audio Box is an offline music player app which allows use to hear music from their local storage and also do functions like add to favorites , create playlists , recently played , mostly played etc.",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Text("App developed by Sreenivas Shenoy v."),
+                    ]);
+                // Navigator.pop(context);
               },
             ),
             ListTile(
@@ -528,7 +559,14 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
-                Navigator.pop(context);
+                showDialog(
+                    context: context,
+                    builder: (builder) {
+                      return Settingmenupopup(
+                        mdFilename: 'termsandconditons.md',
+                      );
+                    });
+                // Navigator.pop(context);
               },
             ),
             ListTile(
@@ -555,6 +593,15 @@ class _HomePageState extends State<HomePage> {
                 quitBox();
               },
             ),
+            SizedBox(
+              height: height * 0.65,
+              child: const Center(
+                child: Text(
+                  "Version\n \t 1.0.0",
+                  style: TextStyle(color: Colors.white38),
+                ),
+              ),
+            )
           ],
         ),
       ),
@@ -955,13 +1002,17 @@ class _HomePageState extends State<HomePage> {
               log('song added to ${playlistsong[index].platlistname}');
               Navigator.pop(context);
               final snackBar = SnackBar(
+                duration: const Duration(seconds: 1),
                 content: Padding(
                   padding: const EdgeInsets.all(14.0),
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.playlist_add,
                         color: Colors.white,
+                      ),
+                      SizedBox(
+                        width: 5,
                       ),
                       Text(
                         'Added to ${playlistsong[index].platlistname}',

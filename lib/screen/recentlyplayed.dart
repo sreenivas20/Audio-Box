@@ -1,9 +1,10 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
-import 'package:flutter/src/widgets/framework.dart';
+// import 'package:flutter/semantics.dart';
+// import 'package:flutter/src/widgets/framework.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:musicplayer/db_funtion/recentlyplayed.dart';
+import 'package:musicplayer/screen/nowplaying_slider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:text_scroll/text_scroll.dart';
 // import 'package:flutter/src/widgets/placeholder.dart';
@@ -189,6 +190,7 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
           ),
         ),
       ),
+      bottomSheet: NowPlayingSlider(),
     );
   }
 

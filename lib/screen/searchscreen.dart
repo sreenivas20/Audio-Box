@@ -1,6 +1,8 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:musicplayer/db_funtion/songdb_model.dart';
+import 'package:musicplayer/screen/nowplaying_slider.dart';
 // import 'package:musicplayer/screen/homescreen.dart';
 import 'package:musicplayer/screen/playingscreen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -152,6 +154,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ],
       ),
+      bottomSheet: NowPlayingSlider(),
     );
   }
 

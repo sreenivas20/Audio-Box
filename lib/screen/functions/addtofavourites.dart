@@ -4,7 +4,7 @@ import 'package:musicplayer/db_funtion/favorate_db_model.dart';
 import 'package:musicplayer/db_funtion/songdb_model.dart';
 import 'package:musicplayer/screen/favoratiescreen.dart';
 import 'package:musicplayer/screen/playingscreen.dart';
-import 'package:musicplayer/screen/homescreen.dart';
+// import 'package:musicplayer/screen/homescreen.dart';
 
 addToFavourite(int index) async {
   List<Songs> dbsongs = box.values.toList();

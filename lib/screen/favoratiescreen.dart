@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:musicplayer/db_funtion/favorate_db_model.dart';
 import 'package:musicplayer/screen/functions/addtofavourites.dart';
-import 'package:musicplayer/screen/homescreen.dart';
+import 'package:musicplayer/screen/nowplaying_slider.dart';
+// import 'package:musicplayer/screen/homescreen.dart';
 import 'package:musicplayer/screen/playingscreen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
-
-
 class FavoriteScreen extends StatefulWidget {
-  FavoriteScreen({super.key});
+  const FavoriteScreen({super.key});
 
   @override
   State<FavoriteScreen> createState() => _FavoriteScreenState();
@@ -139,6 +138,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           )
         ],
       ),
+      bottomSheet: NowPlayingSlider(),
     );
   }
 
@@ -163,12 +163,12 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             onTap: () {
               PlayingScreen.playingNowIndex.value = index;
 
-              _audioPlayer.open(Playlist(audios: favSongs, startIndex: index),
-                  showNotification: true,
-                  headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplug,
-                  loopMode: LoopMode.playlist);
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (ctx) => PlayingScreen()));
+              _audioPlayer.open(
+                Playlist(audios: favSongs, startIndex: index),
+                showNotification: true,
+                headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplug,
+              );
+
               // setState(() {});
             },
             leading: imagecover,
@@ -191,8 +191,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     onPressed: () {
                       setState(() {
                         deleteFavSongs(index, context);
-
-                       
                       });
                       final snackBar = SnackBar(
                         duration: const Duration(seconds: 1),

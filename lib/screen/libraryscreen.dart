@@ -63,17 +63,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
+            const Padding(
+              padding: EdgeInsets.all(20.0),
               child: Text(
                 'MyLibrary',
                 style: TextStyle(fontSize: 50, color: Colors.white),
               ),
             ),
-            Divider(
+            const Divider(
               thickness: 2,
               color: Colors.white,
             ),

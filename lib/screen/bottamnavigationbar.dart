@@ -1,12 +1,12 @@
-import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
+// import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:musicplayer/screen/favoratiescreen.dart';
-import 'package:musicplayer/screen/homepage.dart';
+// import 'package:flutter/src/widgets/framework.dart';
+// import 'package:flutter/src/widgets/placeholder.dart';
+// import 'package:musicplayer/screen/favoratiescreen.dart';
+// import 'package:musicplayer/screen/homepage.dart';
 import 'package:musicplayer/screen/homescreen.dart';
 import 'package:musicplayer/screen/libraryscreen.dart';
-import 'package:musicplayer/screen/playlistscrren.dart';
+// import 'package:musicplayer/screen/playlistscrren.dart';
 import 'package:musicplayer/screen/searchscreen.dart';
 
 // import 'package:musicplayer/screen/homepage/
@@ -32,13 +32,13 @@ class _BottamNavigationScreenState extends State<BottamNavigationScreen> {
   void initState() {
     _pages = [
       {
-        'pages': HomePage(),
+        'pages': const HomePage(),
       },
       {
-        'pages': SearchScreen(),
+        'pages': const SearchScreen(),
       },
       {
-        'pages': LibraryScreen(),
+        'pages': const LibraryScreen(),
       },
     ];
     super.initState();
@@ -63,7 +63,7 @@ class _BottamNavigationScreenState extends State<BottamNavigationScreen> {
           showUnselectedLabels: false,
           onTap: _selectpage,
           backgroundColor: Colors.black,
-          unselectedItemColor: Color.fromARGB(255, 28, 53, 64),
+          unselectedItemColor: const Color.fromARGB(255, 28, 53, 64),
           selectedItemColor: Colors.white,
           currentIndex: _selectedPageindex,
           items: const [
@@ -97,7 +97,7 @@ class _BottamNavigationScreenState extends State<BottamNavigationScreen> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(0.0),
         child: FloatingActionButton(
-          shape: CircleBorder(),
+          shape: const CircleBorder(),
           backgroundColor: Colors.blueGrey.shade800,
           hoverElevation: 20,
           splashColor: Colors.black,

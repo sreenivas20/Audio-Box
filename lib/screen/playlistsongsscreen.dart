@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:musicplayer/db_funtion/playlistmodel.dart';
 import 'package:musicplayer/db_funtion/songdb_model.dart';
+import 'package:musicplayer/screen/nowplaying_slider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:text_scroll/text_scroll.dart';
 
@@ -150,6 +151,7 @@ class _PlayListSongsListState extends State<PlayListSongsList> {
                                                     widget.playlistname!,
                                                 playlistsongs: playsong));
                                         final snackBar = SnackBar(
+                                          duration: const Duration(seconds: 1),
                                           content: Padding(
                                             padding: const EdgeInsets.all(15.0),
                                             child: Row(
@@ -224,6 +226,7 @@ class _PlayListSongsListState extends State<PlayListSongsList> {
           ),
         ),
       ),
+      bottomSheet: NowPlayingSlider(),
     );
   }
 }
