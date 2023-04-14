@@ -34,7 +34,7 @@ recentlyPlayedFunction(RecentlyPlayed value) {
   }
 }
 
-updateSongPlayedCount(MostPlayed value) {
+updateSongPlayedCount(MostPlayed value, int index) {
   // final box = MostPlayedBox.getInstance();
   List<MostPlayed> mostlist = mostPlayedSongs.values.toList();
 

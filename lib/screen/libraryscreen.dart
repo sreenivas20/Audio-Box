@@ -23,7 +23,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       leading: ledIcon,
       title: Text(
         title,
-        style: const TextStyle(fontSize: 25, color: Colors.white),
+        style: const TextStyle(fontSize: 24, color: Colors.white),
       ),
       trailing: trailIcon,
     );
@@ -67,20 +67,20 @@ class _LibraryScreenState extends State<LibraryScreen> {
               height: 10,
             ),
             const Padding(
-              padding: EdgeInsets.all(20.0),
+              padding: EdgeInsets.only(top: 30.0, left: 30, bottom: 10),
               child: Text(
                 'MyLibrary',
-                style: TextStyle(fontSize: 50, color: Colors.white),
+                style: TextStyle(fontSize: 40, color: Colors.white),
               ),
             ),
             const Divider(
-              thickness: 2,
+              thickness: 1,
               color: Colors.white,
             ),
             myListTile(
               const Icon(
                 Icons.playlist_add,
-                size: 36,
+                size: 30,
                 color: Colors.white,
               ),
               'Playlist',
@@ -93,11 +93,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 ),
               ),
             ),
-            boxSize(12, 0),
+            boxSize(10, 0),
             myListTile(
               const Icon(
                 Icons.recent_actors,
-                size: 36,
+                size: 30,
                 color: Colors.white,
               ),
               'Recently played',
@@ -110,11 +110,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 ),
               ),
             ),
-            boxSize(12, 0),
+            boxSize(10, 0),
             myListTile(
               const Icon(
                 Icons.favorite_outline,
-                size: 36,
+                size: 30,
                 color: Colors.white,
               ),
               'Liked Songs',
@@ -127,11 +127,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 ),
               ),
             ),
-            boxSize(12, 0),
+            boxSize(10, 0),
             myListTile(
               const Icon(
                 Icons.playlist_add_check,
-                size: 36,
+                size: 30,
                 color: Colors.white,
               ),
               'Mostly Played',

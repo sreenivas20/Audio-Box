@@ -116,7 +116,6 @@ class _HomePageState extends State<HomePage> {
     mostsong,
   ) {
     // MostPlayed mostsong = allmostplayedsong[index];
-    log('error');
     Songs songs = allDbsongs[index];
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 0),
@@ -157,7 +156,7 @@ class _HomePageState extends State<HomePage> {
                   index: index);
               NowPlayingSlider.enteredvalue.value = index;
               recentlyPlayedFunction(rsongs);
-              updateSongPlayedCount(mostsong);
+              updateSongPlayedCount(mostsong, index);
             },
             leading: imagecover,
             title: Text(
@@ -184,7 +183,6 @@ class _HomePageState extends State<HomePage> {
                           HeadPhoneStrategy.pauseOnUnplugPlayOnPlug,
                       showNotification: true,
                     );
-                    
                   },
                   // ignore: prefer_const_constructors
                   icon: Icon(
@@ -413,7 +411,7 @@ class _HomePageState extends State<HomePage> {
               ),
               TextButton(
                 onPressed: () {
-                  createplaylist(myController.text);
+                  createplaylist(myController.text,context);
                   Navigator.of(ctx).pop();
                 },
                 child: const Text(
@@ -472,6 +470,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       // bottomSheet: NowPlayingSlider(),
+
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -825,7 +824,6 @@ class _HomePageState extends State<HomePage> {
                       child: ValueListenableBuilder<Box<Songs>>(
                           valueListenable: songbox.listenable(),
                           builder: ((context, allsongbox, child) {
-                            log('error song');
                             List<Songs> allDbsongs = allsongbox.values.toList();
 
                             return ListView.builder(
@@ -834,7 +832,6 @@ class _HomePageState extends State<HomePage> {
                               shrinkWrap: true,
                               itemCount: allDbsongs.length,
                               itemBuilder: ((context, index) {
-                                log('song index');
                                 RecentlyPlayed? rsongs;
                                 MostPlayed mostsong = allmostplayedsong[index];
 

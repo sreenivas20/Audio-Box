@@ -70,6 +70,7 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
         child: Center(
           child: ListTile(
             onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
               _audioPlayer.open(
                 Playlist(audios: rcentplay, startIndex: recentIndex),
                 headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplugPlayOnPlug,

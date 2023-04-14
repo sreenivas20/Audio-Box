@@ -98,6 +98,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplug,
                   showNotification: true,
                   loopMode: LoopMode.playlist);
+              // Navigator.of(context).push(CupertinoPageRoute(
+              //     fullscreenDialog: true, builder: ((ctx) => PlayingScreen())));
             },
             leading: cover,
             title: TextScroll(
@@ -115,6 +117,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomSheet: NowPlayingSlider(),
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
@@ -154,7 +157,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ],
       ),
-      bottomSheet: NowPlayingSlider(),
+      // bottomSheet: NowPlayingSlider(),
     );
   }
 

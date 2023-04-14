@@ -166,39 +166,39 @@ class _PlayingScreenState extends State<PlayingScreen> {
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        right: 38.0, top: 15),
+                                        right: 38.0, top: 50),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            if (checkFavoritesStatus(
-                                                playing.index, BuildContext)) {
-                                              addToFavourite(playing.index);
-                                            } else if (!checkFavoritesStatus(
-                                                playing.index, BuildContext)) {
-                                              removeFavSong(playing.index);
-                                            }
-                                            setState(() {
-                                              checkFavoritesStatus(
-                                                      playing.index,
-                                                      BuildContext) ==
-                                                  !checkFavoritesStatus(
-                                                      playing.index,
-                                                      BuildContext);
-                                            });
-                                          },
-                                          icon: checkFavoritesStatus(
-                                                  playing.index, BuildContext)
-                                              ? const Icon(
-                                                  Icons.favorite_outline,
-                                                  color: Colors.white,
-                                                )
-                                              : const Icon(
-                                                  Icons.favorite,
-                                                  color: Colors.white,
-                                                ),
-                                        ),
+                                      children: const [
+                                        // IconButton(
+                                        //   onPressed: () {
+                                        //     if (checkFavoritesStatus(
+                                        //         playing.index, BuildContext)) {
+                                        //       addToFavourite(playing.index);
+                                        //     } else if (!checkFavoritesStatus(
+                                        //         playing.index, BuildContext)) {
+                                        //       removeFavSong(playing.index);
+                                        //     }
+                                        //     setState(() {
+                                        //       checkFavoritesStatus(
+                                        //               playing.index,
+                                        //               BuildContext) ==
+                                        //           !checkFavoritesStatus(
+                                        //               playing.index,
+                                        //               BuildContext);
+                                        //     });
+                                        //   },
+                                        //   icon: checkFavoritesStatus(
+                                        //           playing.index, BuildContext)
+                                        //       ? const Icon(
+                                        //           Icons.favorite_outline,
+                                        //           color: Colors.white,
+                                        //         )
+                                        //       : const Icon(
+                                        //           Icons.favorite,
+                                        //           color: Colors.white,
+                                        //         ),
+                                        // ),
                                       ],
                                     ),
                                   ),
@@ -259,7 +259,8 @@ class _PlayingScreenState extends State<PlayingScreen> {
                                             IconButton(
                                                 onPressed: () {
                                                   setState(() {
-                                                    audioPlayer2.shuffle;
+                                                    audioPlayer2
+                                                        .toggleShuffle();
                                                   });
                                                 },
                                                 icon: (isShuffleOn)
@@ -267,7 +268,8 @@ class _PlayingScreenState extends State<PlayingScreen> {
                                                         Icons.shuffle_on,
                                                         color: Colors.white,
                                                       )
-                                                    : const Icon(Icons.shuffle,
+                                                    : const Icon(
+                                                        Icons.shuffle_outlined,
                                                         color: Colors.white)),
                                             // SizedBox(
                                             //   width: width * 0.10,

@@ -19,7 +19,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
   late List<PlaylistSongs> playlistsong = playlistbox.values.toList();
   final List<PlaylistSongs> playlistsong1 = [];
 
-  Widget  block(String musicName, context, index) {
+  Widget block(String musicName, context, index) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, left: 15, right: 20),
       child: Container(
@@ -219,7 +219,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  createplaylist(myController.text);
+                  createplaylist(myController.text, context);
                   Navigator.of(ctx).pop();
                 },
                 child: const Text(

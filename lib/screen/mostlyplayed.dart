@@ -77,37 +77,6 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
             ),
             subtitle:
                 TextScroll(sub, style: const TextStyle(color: Colors.white)),
-
-            // trailing: Row(
-            //   mainAxisSize: MainAxisSize.min,
-            //   children: [
-            //     IconButton(
-            //         onPressed: _onFavoriteButtonPress,
-            //         icon: Icon(
-            //           _isFavorite
-            //               ? Icons.favorite
-            //               : Icons.favorite_border_outlined,
-            //           color: Colors.white,
-            //           // size: ,
-            //         )),
-            //     PopupMenuButton(
-            //       color: Colors.white,
-            //       itemBuilder: (context) {
-            //         return [
-            //           const PopupMenuItem(
-            //             value: 1,
-            //             child: Text('Remove songs'),
-            //           ),
-            //         ];
-            //       },
-            //       onSelected: (value) {
-            //         if (value == 1) {
-            //           removeBox();
-            //         }
-            //       },
-            //     ),
-            //   ],
-            // ),
           ),
         ),
       ),
@@ -188,38 +157,5 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
     );
   }
 
-  // void removeBox() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (ctx) => AlertDialog( shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-  //       title: const Text("Remove song "),
-  //       content: const Text('Are you sure'),
-  //       actions: <Widget>[
-  //         Row(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             TextButton(
-  //               onPressed: () {
-  //                 Navigator.of(ctx).pop();
-  //               },
-  //               child: const Text(
-  //                 "Cancel",
-  //                 style: TextStyle(color: Colors.blue),
-  //               ),
-  //             ),
-  //             TextButton(
-  //               onPressed: () {
-  //                 Navigator.of(ctx).pop();
-  //               },
-  //               child: const Text(
-  //                 "Remove",
-  //                 style: TextStyle(color: Colors.red),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  
 }
