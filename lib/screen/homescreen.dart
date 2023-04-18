@@ -20,8 +20,6 @@ import 'package:musicplayer/screen/popup.dart';
 import 'package:musicplayer/screen/recentlyplayed.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:share_plus/share_plus.dart';
-// import 'package:musicplayer/screen/splashscreen.dart';
-
 import 'mostlyplayed.dart';
 
 class HomePage extends StatefulWidget {
@@ -98,11 +96,6 @@ class _HomePageState extends State<HomePage> {
   // final AudioPlayer _audioPlayer = AudioPlayer();
   List<SongModel> allSongs = [];
 
-  // void _onFavoriteButtonPress() {
-  //   setState(() {
-  //     isFavorite = !isFavorite;
-  //   });
-  // }
 
   var size, height, width;
 
@@ -198,7 +191,7 @@ class _HomePageState extends State<HomePage> {
                         value: 1,
                         child: Row(
                           children: [
-                            checkFavoritesStatus(index, BuildContext)
+                            checkFavoritesStatus(songs.id, BuildContext)
                                 ? const Icon(
                                     Icons.favorite_outline,
                                   )
@@ -209,7 +202,7 @@ class _HomePageState extends State<HomePage> {
                             const SizedBox(
                               width: 5,
                             ),
-                            checkFavoritesStatus(index, BuildContext)
+                            checkFavoritesStatus(songs.id, BuildContext)
                                 ? const Text(
                                     'Add to favourite',
                                     style: TextStyle(color: Colors.red),
@@ -235,8 +228,8 @@ class _HomePageState extends State<HomePage> {
                   },
                   onSelected: (value) {
                     if (value == 1) {
-                      if (checkFavoritesStatus(index, BuildContext)) {
-                        addToFavourite(index);
+                      if (checkFavoritesStatus(songs.id, BuildContext)) {
+                        addToFavourite(songs.id);
 
                         final snackBar = SnackBar(
                           duration: const Duration(seconds: 1),
@@ -264,7 +257,7 @@ class _HomePageState extends State<HomePage> {
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       } else if (!checkFavoritesStatus(index, BuildContext)) {
-                        removeFavSong(index);
+                        removeFavSong(songs.id);
                         final snackBar = SnackBar(
                           content: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -313,74 +306,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Widget bottomSheet(musicName) {
-  //   return Padding(
-  //     padding: const EdgeInsets.only(top: 10.0, left: 15),
-  //     child: Container(
-  //       width: 320,
-  //       height: 70,
-  //       decoration: BoxDecoration(
-  //         borderRadius: BorderRadius.circular(20),
-  //         gradient: const LinearGradient(
-  //           colors: [
-  //             Color.fromARGB(255, 25, 35, 40),
-  //             Color.fromARGB(255, 24, 33, 38),
-  //           ],
-  //         ),
-  //       ),
-  //       child: Center(
-  //         child: ListTile(
-  //           leading: ClipRRect(
-  //             borderRadius: BorderRadius.circular(10),
-  //             child: Image.asset(
-  //               'assets/logo music player.png',
-  //               width: 65,
-  //               height: 50,
-  //               fit: BoxFit.cover,
-  //             ),
-  //           ),
-  //           title: Text(
-  //             musicName,
-  //             style: const TextStyle(color: Colors.white),
-  //           ),
-  //           trailing: Row(
-  //             mainAxisSize: MainAxisSize.min,
-  //             children: [
-  //               IconButton(
-  //                   onPressed: _onFavoriteButtonPress,
-  //                   icon: Icon(
-  //                     isFavorite ? Icons.favorite : Icons.favorite_outline,
-  //                     color: Colors.white,
-  //                   )),
-  //               PopupMenuButton(
-  //                 color: Colors.white,
-  //                 itemBuilder: (context) {
-  //                   return [
-  //                     const PopupMenuItem(
-  //                       value: 1,
-  //                       child: Text('Remove Playlist'),
-  //                     ),
-  //                     const PopupMenuItem(
-  //                       value: 2,
-  //                       child: Text('Remane playlist'),
-  //                     ),
-  //                   ];
-  //                 },
-  //                 onSelected: (value) {
-  //                   if (value == 1) {
-  //                     removeBox(index);
-  //                   } else if (value == 2) {
-  //                     renameBox(context,index);
-  //                   }
-  //                 },
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   void alertBox() {
     final myController = TextEditingController(text: 'Playlist');

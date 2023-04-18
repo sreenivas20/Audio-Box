@@ -6,56 +6,58 @@ import 'package:musicplayer/screen/favoratiescreen.dart';
 import 'package:musicplayer/screen/playingscreen.dart';
 // import 'package:musicplayer/screen/homescreen.dart';
 
-addToFavourite(int index) async {
+addToFavourite(int? id) async {
   List<Songs> dbsongs = box.values.toList();
 
   List<Favourites> favouritessongs = [];
   favouritessongs = favouritesdb.values.toList();
-  bool isalready = favouritessongs
-      .where((element) => element.songname == dbsongs[index].songname)
-      .isEmpty;
+  bool isalready = favouritessongs.any((element) => element.id == id);
 
-  if (isalready) {
+  if (!isalready) {
+    Songs song = dbsongs.firstWhere((element) => element.id == id);
+
     favouritesdb.add(Favourites(
-        songname: dbsongs[index].songname,
-        artist: dbsongs[index].artist,
-        duration: dbsongs[index].duration,
-        songUrl: dbsongs[index].songUrl,
-        id: dbsongs[index].id));
+        songname: song.songname,
+        artist: song.artist,
+        duration: song.duration,
+        songUrl: song.songUrl,
+        id: song.id));
   } else {
-    favouritessongs
-        .where((element) => element.songname == dbsongs[index].songname);
-    int currentindex = favouritessongs
-        .indexWhere((element) => element.id == dbsongs[index].id);
+    // favouritessongs
+    //     .where((element) => element.songname == dbsongs[id].songname);
+    int currentindex =
+        favouritessongs.indexWhere((element) => element.id == id);
     await favouritesdb.deleteAt(currentindex);
     // await favouritesdb.deleteAt(index);
   }
 }
 
-bool checkFavoritesStatus(int index, BuildContext) {
+bool checkFavoritesStatus(int? songId, BuildContext) {
   List<Favourites> favouritesongs = [];
   List<Songs> dbsongs = box.values.toList();
+  Songs song = dbsongs.firstWhere((element) => element.id == songId);
+
   Favourites value = Favourites(
-      songname: dbsongs[index].songname,
-      artist: dbsongs[index].artist,
-      duration: dbsongs[index].duration,
-      songUrl: dbsongs[index].songUrl,
-      id: dbsongs[index].id);
+      songname: song.songname,
+      artist: song.artist,
+      duration: song.duration,
+      songUrl: song.songUrl,
+      id: song.id);
 
   favouritesongs = favouritesdb.values.toList();
-  bool isAlreadyThere = favouritesongs
-      .where((element) => element.songname == value.songname)
-      .isEmpty;
-  return isAlreadyThere ? true : false;
+  bool isAlreadyThere =
+      favouritesongs.where((element) => element.id == value.id).isEmpty;
+  return isAlreadyThere;
 }
 
-removeFavSong(int index) async {
+removeFavSong(int? songId) async {
   final box4 = FavSongBox.getInstance();
   List<Favourites> favsongs = box4.values.toList();
   List<Songs> dbsongs = box.values.toList();
-  int currentIndex =
-      favsongs.indexWhere((element) => element.id == dbsongs[index].id);
-  await favouritesdb.deleteAt(currentIndex);
+  int currentIndex = favsongs.indexWhere((element) => element.id == songId);
+  if (currentIndex > 0) {
+    await favouritesdb.deleteAt(currentIndex);
+  }
 }
 
 deleteFavSongs(int index, BuildContext context) async {

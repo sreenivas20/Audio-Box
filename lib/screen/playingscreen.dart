@@ -1,5 +1,6 @@
 import 'dart:developer';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:musicplayer/db_funtion/songdb_model.dart';
 import 'package:musicplayer/screen/functions/addtofavourites.dart';
 import 'package:musicplayer/screen/homescreen.dart';
+import 'package:musicplayer/screen/liyric.dart';
 
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:text_scroll/text_scroll.dart';
@@ -70,6 +72,16 @@ class _PlayingScreenState extends State<PlayingScreen> {
           'Playing...',
           style: TextStyle(color: Colors.white),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                getLyrics(context);
+              },
+              icon: const Icon(
+                Icons.library_music_rounded,
+                color: Colors.white,
+              ))
+        ],
       ),
       body: Stack(
         children: [
@@ -96,7 +108,6 @@ class _PlayingScreenState extends State<PlayingScreen> {
                   return ValueListenableBuilder<Box<Songs>>(
                     valueListenable: box.listenable(),
                     builder: ((context, Box<Songs> allsongBox, child) {
-                      log('sgsg');
                       List<Songs> allsongs = allsongBox.values.toList();
                       if (allsongs.isEmpty) {
                         return const Center(
@@ -169,36 +180,46 @@ class _PlayingScreenState extends State<PlayingScreen> {
                                         right: 38.0, top: 50),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
-                                      children: const [
-                                        // IconButton(
-                                        //   onPressed: () {
-                                        //     if (checkFavoritesStatus(
-                                        //         playing.index, BuildContext)) {
-                                        //       addToFavourite(playing.index);
-                                        //     } else if (!checkFavoritesStatus(
-                                        //         playing.index, BuildContext)) {
-                                        //       removeFavSong(playing.index);
-                                        //     }
-                                        //     setState(() {
-                                        //       checkFavoritesStatus(
-                                        //               playing.index,
-                                        //               BuildContext) ==
-                                        //           !checkFavoritesStatus(
-                                        //               playing.index,
-                                        //               BuildContext);
-                                        //     });
-                                        //   },
-                                        //   icon: checkFavoritesStatus(
-                                        //           playing.index, BuildContext)
-                                        //       ? const Icon(
-                                        //           Icons.favorite_outline,
-                                        //           color: Colors.white,
-                                        //         )
-                                        //       : const Icon(
-                                        //           Icons.favorite,
-                                        //           color: Colors.white,
-                                        //         ),
-                                        // ),
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            if (checkFavoritesStatus(
+                                                int.parse(playing
+                                                    .audio.audio.metas.id!),
+                                                BuildContext)) {
+                                              addToFavourite(int.parse(playing
+                                                  .audio.audio.metas.id!));
+                                            } else if (!checkFavoritesStatus(
+                                                int.parse(playing
+                                                    .audio.audio.metas.id!),
+                                                BuildContext)) {
+                                              removeFavSong(int.parse(playing
+                                                  .audio.audio.metas.id!));
+                                            }
+                                            setState(() {
+                                              checkFavoritesStatus(
+                                                      int.parse(playing.audio
+                                                          .audio.metas.id!),
+                                                      BuildContext) ==
+                                                  !checkFavoritesStatus(
+                                                      int.parse(playing.audio
+                                                          .audio.metas.id!),
+                                                      BuildContext);
+                                            });
+                                          },
+                                          icon: checkFavoritesStatus(
+                                                  int.parse(playing
+                                                      .audio.audio.metas.id!),
+                                                  BuildContext)
+                                              ? const Icon(
+                                                  Icons.favorite_outline,
+                                                  color: Colors.white,
+                                                )
+                                              : const Icon(
+                                                  Icons.favorite,
+                                                  color: Colors.white,
+                                                ),
+                                        ),
                                       ],
                                     ),
                                   ),

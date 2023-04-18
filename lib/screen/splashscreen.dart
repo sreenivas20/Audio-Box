@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:musicplayer/db_funtion/mostlyplayed.dart';
 import 'package:musicplayer/db_funtion/songdb_model.dart';
 import 'package:musicplayer/screen/bottamnavigationbar.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:musicplayer/db_funtion/all_db_functions.dart';
-// import 'package:musicplayer/bottamnavigationbar.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,7 +11,7 @@ class SplashScreen extends StatefulWidget {
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
-  // final mostbox = MostPlayedBox.getInstance();
+// final mostbox = MostPlayedBox.getInstance();
 
 class _SplashScreenState extends State<SplashScreen> {
   @override

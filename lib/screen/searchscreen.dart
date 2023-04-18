@@ -39,6 +39,9 @@ class _SearchScreenState extends State<SearchScreen> {
   final songbox = SongBox.getInstance();
   Widget searchTextField() {
     return TextFormField(
+      onTapOutside: (event) {
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
       onChanged: (value) => searchList(value),
       autofocus: true,
       controller: _searchController,

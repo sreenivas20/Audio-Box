@@ -135,11 +135,11 @@ class _PlayListScreenState extends State<PlayListScreen> {
             ),
           ),
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
                 Padding(
-                    padding: EdgeInsets.only(top: 130, right: 25),
+                    padding: const EdgeInsets.only(top: 130, right: 25),
                     child: IconButton(
                         onPressed: () => alertBox(),
                         icon: const Icon(Icons.add_circle_outline,
@@ -199,10 +199,10 @@ class _PlayListScreenState extends State<PlayListScreen> {
         title: const Text("Create Playlist"),
         content: TextField(
           controller: myController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
               labelText: 'Enter the Name of Playlist',
               border: InputBorder.none),
-          style: TextStyle(color: Colors.black),
+          style: const TextStyle(color: Colors.black),
         ),
         actions: <Widget>[
           Row(
@@ -247,10 +247,10 @@ class _PlayListScreenState extends State<PlayListScreen> {
         title: const Text("Rename Playlist"),
         content: TextField(
           controller: textEditmyController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Enter the new Name of Playlist',
           ),
-          style: TextStyle(color: Colors.black),
+          style: const TextStyle(color: Colors.black),
         ),
         actions: <Widget>[
           Row(
