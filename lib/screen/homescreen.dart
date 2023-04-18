@@ -844,7 +844,7 @@ class _HomePageState extends State<HomePage> {
                                     shrinkWrap: true,
                                     itemBuilder: ((context, index) {
                                       return block(
-                                          playlistsong[index].platlistname!,
+                                          playlistsong[index].platlistname!,  
                                           context,
                                           index,
                                           playlistsongs,

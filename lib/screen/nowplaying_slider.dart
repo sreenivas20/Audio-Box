@@ -46,129 +46,126 @@ class _NowPlayingSliderState extends State<NowPlayingSlider> {
               color: Colors.white, borderRadius: BorderRadius.circular(30)),
           width: vwidth,
           height: 90,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 18.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: QueryArtworkWidget(
-                    quality: 100,
-                    artworkWidth: vwidth * 0.16,
-                    artworkHeight: vheight * 0.16,
-                    keepOldArtwork: true,
-                    artworkBorder: BorderRadius.circular(10),
-                    id: int.parse(playing.audio.audio.metas.id!),
-                    type: ArtworkType.AUDIO,
-                    nullArtworkWidget: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        'assets/logo_music_player-removebg-preview.png',
-                        width: vwidth * 0.1,
-                      ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: QueryArtworkWidget(
+                  quality: 100,
+                  artworkWidth: vwidth * 0.16,
+                  artworkHeight: vheight * 0.16,
+                  keepOldArtwork: true,
+                  artworkBorder: BorderRadius.circular(10),
+                  id: int.parse(playing.audio.audio.metas.id!),
+                  type: ArtworkType.AUDIO,
+                  nullArtworkWidget: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/logo_music_player-removebg-preview.png',
+                      width: vwidth * 0.1,
                     ),
                   ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: vwidth * 0.4,
-                      child: TextScroll(
-                        audioPlayerSlider.getCurrentAudioTitle,
-                        // overflow: TextOverflow.ellipsis,
-                      ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: vwidth * 0.4,
+                    child: TextScroll(
+                      audioPlayerSlider.getCurrentAudioTitle,
+                      // overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(
-                      width: vwidth * 0.4,
-                      child: TextScroll(
-                        // allDbdongs[value].artist ?? "No Artist",
-                        audioPlayerSlider.getCurrentAudioArtist,
-                        // overflow: TextOverflow.ellipsis,
-                      ),
-                    )
-                  ],
-                ),
-                PlayerBuilder.isPlaying(
-                  player: audioPlayerSlider,
-                  builder: ((context, isPlaying) {
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        right: vwidth * 0.02,
-                      ),
-                      child: Wrap(
-                        spacing: 10,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          Container(
-                            width: 35,
-                            height: 35,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              color: Colors.black,
-                            ),
-                            child: IconButton(
-                              onPressed: () async {
-                                await audioPlayerSlider.previous();
-                              },
-                              icon: const Icon(
-                                Icons.skip_previous,
-                                color: Colors.white,
-                                size: 20,
-                              ),
+                  ),
+                  SizedBox(
+                    width: vwidth * 0.4,
+                    child: TextScroll(
+                      // allDbdongs[value].artist ?? "No Artist",
+                      audioPlayerSlider.getCurrentAudioArtist,
+                      // overflow: TextOverflow.ellipsis,
+                    ),
+                  )
+                ],
+              ),
+              PlayerBuilder.isPlaying(
+                player: audioPlayerSlider,
+                builder: ((context, isPlaying) {
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      right: vwidth * 0.02,
+                    ),
+                    child: Wrap(
+                      spacing: 10,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Container(
+                          width: 35,
+                          height: 35,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Colors.black,
+                          ),
+                          child: IconButton(
+                            onPressed: () async {
+                              await audioPlayerSlider.previous();
+                            },
+                            icon: const Icon(
+                              Icons.skip_previous,
+                              color: Colors.white,
+                              size: 20,
                             ),
                           ),
-                          Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  color: Colors.black),
-                              child: Center(
-                                child: IconButton(
-                                  icon: Icon(
-                                    (isPlaying)
-                                        ? Icons.pause_circle_filled
-                                        : Icons.play_circle_filled,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                  onPressed: () async {
-                                    await audioPlayerSlider.playOrPause();
-
-                                    // playsong(value);
-                                    setState(() {
-                                      isPlaying = !isPlaying;
-                                    });
-                                  },
-                                ),
-                              )),
-                          Container(
-                            width: 35,
-                            height: 35,
+                        ),
+                        Container(
+                            height: 40,
+                            width: 40,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(30),
                                 color: Colors.black),
-                            child: IconButton(
-                              onPressed: () async {
-                                await audioPlayerSlider.next();
-                              },
-                              icon: const Icon(
-                                Icons.skip_next,
-                                color: Colors.white,
-                                size: 20,
+                            child: Center(
+                              child: IconButton(
+                                icon: Icon(
+                                  (isPlaying)
+                                      ? Icons.pause_circle_filled
+                                      : Icons.play_circle_filled,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                onPressed: () async {
+                                  await audioPlayerSlider.playOrPause();
+
+                                  // playsong(value);
+                                  setState(() {
+                                    isPlaying = !isPlaying;
+                                  });
+                                },
                               ),
+                            )),
+                        Container(
+                          width: 35,
+                          height: 35,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              color: Colors.black),
+                          child: IconButton(
+                            onPressed: () async {
+                              await audioPlayerSlider.next();
+                            },
+                            icon: const Icon(
+                              Icons.skip_next,
+                              color: Colors.white,
+                              size: 20,
                             ),
                           ),
-                        ],
-                      ),
-                    );
-                  }),
-                )
-              ],
-            ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              )
+            ],
           ),
         ),
       );
