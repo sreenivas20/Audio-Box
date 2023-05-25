@@ -55,7 +55,7 @@ removeFavSong(int? songId) async {
   List<Favourites> favsongs = box4.values.toList();
   List<Songs> dbsongs = box.values.toList();
   int currentIndex = favsongs.indexWhere((element) => element.id == songId);
-  if (currentIndex > 0) {
+  if (currentIndex >= 0) {
     await favouritesdb.deleteAt(currentIndex);
   }
 }

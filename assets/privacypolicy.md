@@ -1,4 +1,4 @@
-**Privacy Policy**
+<!-- **Privacy Policy** -->
 
 Sreenivas Shenoy V built the Audio Box app as a Free app. This SERVICE is provided by Sreenivas at no cost and is intended for use as is.
 

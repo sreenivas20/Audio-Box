@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/semantics.dart';
 // import 'package:flutter/src/widgets/framework.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:musicplayer/db_funtion/all_db_functions.dart';
 import 'package:musicplayer/db_funtion/recentlyplayed.dart';
+import 'package:musicplayer/db_funtion/songdb_model.dart';
 import 'package:musicplayer/screen/nowplaying_slider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:text_scroll/text_scroll.dart';
@@ -49,7 +51,8 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
     super.initState();
   }
 
-  Widget customList(cover, musicName, sub, recentIndex) {
+  Widget customList(cover, musicName, sub, recentIndex, Recentplayed, rsongs) {
+    RecentlyPlayed songs = Recentplayed[recentIndex];
     return Padding(
       padding: const EdgeInsets.only(top: 12.0, left: 15, right: 20),
       child: Container(
@@ -76,6 +79,14 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
                 headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplugPlayOnPlug,
                 showNotification: true,
               );
+              rsongs = RecentlyPlayed(
+                  id: songs.id,
+                  artist: songs.artist,
+                  duration: songs.duration,
+                  songurl: songs.songurl,
+                  songname: songs.songname,
+                  index: recentIndex);
+              recentlyPlayedFunction(rsongs);
             },
             leading: ClipRRect(
                 borderRadius: BorderRadius.circular(10), child: cover),
@@ -163,6 +174,7 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
                       ? ListView.builder(
                           itemCount: Recentplayed.length,
                           itemBuilder: ((context, recentIndex) {
+                            RecentlyPlayed? rsongs;
                             return customList(
                                 QueryArtworkWidget(
                                   keepOldArtwork: true,
@@ -175,7 +187,9 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
                                 ),
                                 Recentplayed[recentIndex].songname!,
                                 Recentplayed[recentIndex].artist ?? "No Artist",
-                                recentIndex);
+                                recentIndex,
+                                Recentplayed,
+                                rsongs);
                           }),
                         )
                       : const Center(

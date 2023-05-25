@@ -3,19 +3,37 @@ import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 class Settingmenupopup extends StatelessWidget {
-  Settingmenupopup({Key? key, this.radius = 8, required this.mdFilename})
+  Settingmenupopup(
+      {Key? key,
+      this.radius = 8,
+      required this.mdFilename,
+      required this.title})
       : assert(
             mdFilename.contains('.md'), 'The file must contain .md extention'),
         super(key: key);
   final double radius;
   final String mdFilename;
+  final title;
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            )),
+        title: Text(
+          title,
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.black,
+      ),
       backgroundColor: Colors.black87,
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
-      child: Column(
+      body: Column(
         children: [
           Expanded(
               child: FutureBuilder(
@@ -37,23 +55,23 @@ class Settingmenupopup extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     );
                   })),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Container(
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(10),
-                bottomRight: Radius.circular(10),
-              )),
-              alignment: Alignment.center,
-              height: 50,
-              width: double.infinity,
-              child: const Text(
-                'OK',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          )
+          // TextButton(
+          //   onPressed: () => Navigator.of(context).pop(),
+          //   child: Container(
+          //     decoration: const BoxDecoration(
+          //         borderRadius: BorderRadius.only(
+          //       bottomLeft: Radius.circular(10),
+          //       bottomRight: Radius.circular(10),
+          //     )),
+          //     alignment: Alignment.center,
+          //     height: 50,
+          //     width: double.infinity,
+          //     child: const Text(
+          //       'OK',
+          //       style: TextStyle(color: Colors.white),
+          //     ),
+          //   ),
+          // )
         ],
       ),
     );

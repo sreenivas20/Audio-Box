@@ -5,6 +5,11 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/> 
   <uses-permission android:name="android.permission.WAKE_LOCK"/>
    <uses-permission android:name="android.permission.INTERNET" />
+
+   <!-- <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" android:protectionLevel="signature|privileged"/> -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
    <application
         android:label="Audio Box"
         android:name="${applicationName}"

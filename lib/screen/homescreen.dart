@@ -10,6 +10,7 @@ import 'package:musicplayer/db_funtion/mostlyplayed.dart';
 import 'package:musicplayer/db_funtion/playlistmodel.dart';
 import 'package:musicplayer/db_funtion/recentlyplayed.dart';
 import 'package:musicplayer/db_funtion/songdb_model.dart';
+import 'package:musicplayer/screen/aboutus.dart';
 import 'package:musicplayer/screen/favoratiescreen.dart';
 import 'package:musicplayer/screen/functions/addtofavourites.dart';
 import 'package:musicplayer/screen/functions/createplaylist.dart';
@@ -95,7 +96,6 @@ class _HomePageState extends State<HomePage> {
   final _audioQuery = new OnAudioQuery();
   // final AudioPlayer _audioPlayer = AudioPlayer();
   List<SongModel> allSongs = [];
-
 
   var size, height, width;
 
@@ -256,7 +256,8 @@ class _HomePageState extends State<HomePage> {
                           padding: const EdgeInsets.only(top: 10, bottom: 15),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      } else if (!checkFavoritesStatus(index, BuildContext)) {
+                      } else if (!checkFavoritesStatus(
+                          songs.id, BuildContext)) {
                         removeFavSong(songs.id);
                         final snackBar = SnackBar(
                           content: Padding(
@@ -306,7 +307,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-
   void alertBox() {
     final myController = TextEditingController(text: 'Playlist');
     showDialog(
@@ -336,7 +336,7 @@ class _HomePageState extends State<HomePage> {
               ),
               TextButton(
                 onPressed: () {
-                  createplaylist(myController.text,context);
+                  createplaylist(myController.text, context);
                   Navigator.of(ctx).pop();
                 },
                 child: const Text(
@@ -437,13 +437,11 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
-                showDialog(
-                    context: context,
-                    builder: (builder) {
-                      return Settingmenupopup(
-                        mdFilename: 'privacypolicy.md',
-                      );
-                    });
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => Settingmenupopup(
+                          mdFilename: 'privacypolicy.md',
+                          title: "Privacy Policy",
+                        )));
                 // Navigator.pop(context);
               },
             ),
@@ -454,25 +452,10 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
-                showAboutDialog(
-                    context: context,
-                    applicationName: "Audio Box.",
-                    applicationIcon: Image.asset(
-                      "assets/logo_music_player-removebg-preview.png",
-                      height: 70,
-                      width: 70,
-                    ),
-                    applicationVersion: "1.0.0",
-                    children: [
-                      const Text(
-                        "Audio Box is an offline music player app which allows use to hear music from their local storage and also do functions like add to favorites , create playlists , recently played , mostly played etc.",
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text("App developed by Sreenivas Shenoy v."),
-                    ]);
+                
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const AboutUs(),
+                ));
                 // Navigator.pop(context);
               },
             ),
@@ -483,13 +466,11 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
-                showDialog(
-                    context: context,
-                    builder: (builder) {
-                      return Settingmenupopup(
-                        mdFilename: 'termsandconditons.md',
-                      );
-                    });
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => Settingmenupopup(
+                          mdFilename: 'termsandconditons.md',
+                          title: "Terms & Conditions",
+                        )));
                 // Navigator.pop(context);
               },
             ),
@@ -500,7 +481,7 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () async {
-                const urllink = 'https://github.com/sreenivas20/Audio-Box';
+                const urllink = 'apps.audiobox.musicplayer';
                 await Share.share(urllink);
                 // ignore: use_build_context_synchronously
                 Navigator.pop(context);
@@ -844,7 +825,7 @@ class _HomePageState extends State<HomePage> {
                                     shrinkWrap: true,
                                     itemBuilder: ((context, index) {
                                       return block(
-                                          playlistsong[index].platlistname!,  
+                                          playlistsong[index].platlistname!,
                                           context,
                                           index,
                                           playlistsongs,
