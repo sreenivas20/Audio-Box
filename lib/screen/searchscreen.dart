@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:musicplayer/application/search_provider.dart';
 import 'package:musicplayer/db_funtion/songdb_model.dart';
 import 'package:musicplayer/screen/nowplaying_slider.dart';
@@ -141,12 +140,13 @@ class SearchScreen extends StatelessWidget {
 
               if (value.anotherList.isEmpty) {
                 return Center(
-                  child: Container(
-                      child: Lottie.network(
-                          'https://assets6.lottiefiles.com/packages/lf20_vno7myug.json',
-                          height: 300,
-                          width: 300,
-                          fit: BoxFit.cover)),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(top: 200.0, left: 8, right: 15),
+                    child: Container(
+                        child: Image.asset('assets/animation_500_licqkway.gif',
+                            height: 400, width: 500, fit: BoxFit.cover)),
+                  ),
                 );
               }
 

@@ -25,8 +25,6 @@ class PlayListSongsList extends StatelessWidget {
 
   List<Audio> convertAudios = [];
 
-  
-
   @override
   Widget build(BuildContext context) {
     // log(Provider.of<PlayListProvider>(context).playSong[widget.playindex!].songname!);
@@ -79,8 +77,8 @@ class PlayListSongsList extends StatelessWidget {
                   if (playListSongs.isEmpty) {
                     return Center(
                       child: Container(
-                          child: Lottie.network(
-                              'https://assets6.lottiefiles.com/private_files/lf30_cgfdhxgx.json',
+                          child: Image.asset(
+                              'assets/animation_500_licqel3s.gif',
                               height: 400,
                               width: 500,
                               fit: BoxFit.cover)),
@@ -208,9 +206,7 @@ class PlayListSongsList extends StatelessWidget {
                     }),
                   );
                 },
-              ))
-          
-          ),
+              ))),
       bottomSheet: NowPlayingSlider(),
     );
   }

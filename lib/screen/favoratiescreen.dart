@@ -85,14 +85,14 @@ class FavoriteScreen extends StatelessWidget {
                 if (favDb.isEmpty) {
                   return Padding(
                     padding:
-                        const EdgeInsets.only(right: 80.0, top: 52, left: 0),
+                        const EdgeInsets.only(right: 8.0, top: 30, left: 0),
                     child: SizedBox(
-                      child: Lottie.network(
-                          'https://assets6.lottiefiles.com/packages/lf20_lwnuxmxm.json',
-                          height: 400,
-                          width: 400,
-                          fit: BoxFit.cover),
-                    ),
+                        child: Image.asset(
+                      'assets/animation_500_licqwy2q.gif',
+                      width: 500,
+                      height: 500,
+                      fit: BoxFit.cover,
+                    )),
                   );
                 }
                 return ListView.builder(
@@ -176,12 +176,12 @@ class FavoriteScreen extends StatelessWidget {
                     onPressed: () {
                       dbPro.deleteFavSongs(index, context);
 
-                      final snackBar = SnackBar(
-                        duration: const Duration(seconds: 1),
+                      const snackBar = SnackBar(
+                        duration: Duration(seconds: 1),
                         content: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(8.0),
                           child: Row(
-                            children: const [
+                            children: [
                               Icon(
                                 Icons.favorite,
                                 color: Colors.white,
@@ -198,7 +198,7 @@ class FavoriteScreen extends StatelessWidget {
                         backgroundColor: Colors.black,
                         dismissDirection: DismissDirection.down,
                         elevation: 10,
-                        padding: const EdgeInsets.only(top: 10, bottom: 15),
+                        padding: EdgeInsets.only(top: 10, bottom: 15),
                       );
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     },
