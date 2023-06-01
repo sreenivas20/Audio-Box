@@ -1,48 +1,40 @@
+import 'dart:developer';
+
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:musicplayer/application/search_provider.dart';
 import 'package:musicplayer/db_funtion/songdb_model.dart';
 import 'package:musicplayer/screen/nowplaying_slider.dart';
 // import 'package:musicplayer/screen/homescreen.dart';
 import 'package:musicplayer/screen/playingscreen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:provider/provider.dart';
 import 'package:text_scroll/text_scroll.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+class SearchScreen extends StatelessWidget {
+  SearchScreen({Key? key}) : super(key: key);
 
-  @override
-  State<SearchScreen> createState() => _SearchScreenState();
-}
-
-class _SearchScreenState extends State<SearchScreen> {
   final AssetsAudioPlayer _audioPlayersearch = AssetsAudioPlayer.withId('0');
+
   final box = SongBox.getInstance();
-  late List<Songs> dbSongs;
 
-  @override
-  void initState() {
-    dbSongs = box.values.toList();
-    for (var element in dbSongs) {
-      allSongs.add(Audio.file(element.songUrl!,
-          metas: Metas(
-              title: element.songname,
-              artist: element.artist,
-              id: element.id.toString())));
-    }
-    super.initState();
-  }
-
-  List<Audio> allSongs = [];
   final TextEditingController _searchController = TextEditingController();
-  late List<Songs> anotherList = List.from(dbSongs);
+
   final songbox = SongBox.getInstance();
-  Widget searchTextField() {
+
+  Widget searchTextField(context) {
+    // final dbPro = Provider.of<SearchProvider>(context);
+
     return TextFormField(
       onTapOutside: (event) {
         FocusScope.of(context).requestFocus(FocusNode());
       },
-      onChanged: (value) => searchList(value),
+      onChanged: (value) {
+        Provider.of<SearchProvider>(context, listen: false).searchList(value);
+        log(value);
+      },
       autofocus: true,
       controller: _searchController,
       cursorColor: Colors.white,
@@ -74,7 +66,9 @@ class _SearchScreenState extends State<SearchScreen> {
     _searchController.clear();
   }
 
-  Widget customList(cover, musicName, sub, index) {
+  Widget customList(cover, musicName, sub, index, context) {
+    final dbPro = Provider.of<SearchProvider>(context);
+
     return Padding(
       padding: const EdgeInsets.only(top: 10.0, left: 25, right: 20),
       child: Container(
@@ -97,7 +91,7 @@ class _SearchScreenState extends State<SearchScreen> {
             onTap: () async {
               PlayingScreen.playingNowIndex.value = index;
               await _audioPlayersearch.open(
-                  Playlist(audios: allSongs, startIndex: index),
+                  Playlist(audios: dbPro.allSongs, startIndex: index),
                   headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplug,
                   showNotification: true,
                   loopMode: LoopMode.playlist);
@@ -119,6 +113,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // final dbPro = Provider.of<SearchProvider>(context);
+    log('builder');
+    Provider.of<SearchProvider>(context).initStateFuntion();
     return Scaffold(
       bottomSheet: NowPlayingSlider(),
       backgroundColor: Colors.transparent,
@@ -135,56 +132,49 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 60.0, left: 20, right: 20),
-            child: searchTextField(),
+            child: searchTextField(context),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 140.0),
-            child: ListView.builder(
-              itemCount: anotherList.length,
-              physics: const BouncingScrollPhysics(),
-              itemBuilder: (ctx, index) => customList(
-                  QueryArtworkWidget(
-                    id: anotherList[index].id!,
-                    type: ArtworkType.AUDIO,
-                    nullArtworkWidget: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        'assets/logo_music_player-removebg-preview.png',
-                      ),
-                    ),
-                  ),
-                  anotherList[index].songname!,
-                  anotherList[index].artist ?? "No Artist",
-                  index),
-            ),
+            child: Consumer<SearchProvider>(builder: (context, value, child) {
+              // final dbPro = Provider.of<SearchProvider>(context);
+
+              if (value.anotherList.isEmpty) {
+                return Center(
+                  child: Container(
+                      child: Lottie.network(
+                          'https://assets6.lottiefiles.com/packages/lf20_vno7myug.json',
+                          height: 300,
+                          width: 300,
+                          fit: BoxFit.cover)),
+                );
+              }
+
+              return ListView.builder(
+                  itemCount: value.anotherList.length,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (ctx, index) {
+                    return customList(
+                        QueryArtworkWidget(
+                          id: value.anotherList[index].id!,
+                          type: ArtworkType.AUDIO,
+                          nullArtworkWidget: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(
+                              'assets/logo_music_player-removebg-preview.png',
+                            ),
+                          ),
+                        ),
+                        value.anotherList[index].songname!,
+                        value.anotherList[index].artist ?? "No Artist",
+                        index,
+                        context);
+                  });
+            }),
           ),
         ],
       ),
       // bottomSheet: NowPlayingSlider(),
-    );
-  }
-
-  void searchList(String value) {
-    setState(
-      () {
-        anotherList = dbSongs
-            .where((element) =>
-                element.songname!.toLowerCase().contains(value.toLowerCase()))
-            .toList();
-        allSongs.clear();
-        for (var item in anotherList) {
-          allSongs.add(
-            Audio.file(
-              item.songUrl.toString(),
-              metas: Metas(
-                artist: item.artist,
-                title: item.songname,
-                id: item.id.toString(),
-              ),
-            ),
-          );
-        }
-      },
     );
   }
 }

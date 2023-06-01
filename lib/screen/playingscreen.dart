@@ -1,11 +1,9 @@
-import 'dart:developer';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:musicplayer/application/favorate_provider.dart';
 
 import 'package:musicplayer/db_funtion/songdb_model.dart';
 import 'package:musicplayer/screen/functions/addtofavourites.dart';
@@ -13,8 +11,10 @@ import 'package:musicplayer/screen/homescreen.dart';
 import 'package:musicplayer/screen/liyric.dart';
 
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:provider/provider.dart';
 import 'package:text_scroll/text_scroll.dart';
 
+// ignore: must_be_immutable
 class PlayingScreen extends StatefulWidget {
   PlayingScreen({super.key});
 
@@ -50,6 +50,8 @@ class _PlayingScreenState extends State<PlayingScreen> {
 
   @override
   Widget build(BuildContext context) {
+  final dbPro = Provider.of<FavoriteProvider>(context);
+
     size = MediaQuery.of(context).size;
     height = size.height;
     width = size.width;
@@ -114,6 +116,7 @@ class _PlayingScreenState extends State<PlayingScreen> {
                           child: CircularProgressIndicator(),
                         );
                       }
+                      // ignore: unnecessary_null_comparison
                       if (allsongs == null) {
                         return const Center(
                           child: CircularProgressIndicator(),
@@ -183,31 +186,31 @@ class _PlayingScreenState extends State<PlayingScreen> {
                                       children: [
                                         IconButton(
                                           onPressed: () {
-                                            if (checkFavoritesStatus(
+                                            if (dbPro.checkFavoritesStatus(
                                                 int.parse(playing
                                                     .audio.audio.metas.id!),
                                                 BuildContext)) {
-                                              addToFavourite(int.parse(playing
+                                              dbPro.addToFavourite(int.parse(playing
                                                   .audio.audio.metas.id!));
-                                            } else if (!checkFavoritesStatus(
+                                            } else if (!dbPro.checkFavoritesStatus(
                                                 int.parse(playing
                                                     .audio.audio.metas.id!),
                                                 BuildContext)) {
-                                              removeFavSong(int.parse(playing
+                                              dbPro.removeFavSong(int.parse(playing
                                                   .audio.audio.metas.id!));
                                             }
                                             setState(() {
-                                              checkFavoritesStatus(
+                                              dbPro.checkFavoritesStatus(
                                                       int.parse(playing.audio
                                                           .audio.metas.id!),
                                                       BuildContext) ==
-                                                  !checkFavoritesStatus(
+                                                  !dbPro.checkFavoritesStatus(
                                                       int.parse(playing.audio
                                                           .audio.metas.id!),
                                                       BuildContext);
                                             });
                                           },
-                                          icon: checkFavoritesStatus(
+                                          icon: dbPro.checkFavoritesStatus(
                                                   int.parse(playing
                                                       .audio.audio.metas.id!),
                                                   BuildContext)

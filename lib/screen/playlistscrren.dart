@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:musicplayer/application/playlist_provider.dart';
 import 'package:musicplayer/db_funtion/playlistmodel.dart';
 
 import 'package:musicplayer/screen/functions/createplaylist.dart';
 
 import 'package:musicplayer/screen/playlistsongsscreen.dart';
+import 'package:provider/provider.dart';
 
-class PlayListScreen extends StatefulWidget {
-  const PlayListScreen({super.key});
+class PlayListScreen extends StatelessWidget {
+   PlayListScreen({super.key});
 
-  @override
-  State<PlayListScreen> createState() => _PlayListScreenState();
-}
-
-class _PlayListScreenState extends State<PlayListScreen> {
   final playlistbox = PlaylistSongsbox.getInstance();
+
   late List<PlaylistSongs> playlistsong = playlistbox.values.toList();
+
   final List<PlaylistSongs> playlistsong1 = [];
 
   Widget block(String musicName, context, index) {
@@ -82,7 +81,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                 },
                 onSelected: (value) {
                   if (value == 1) {
-                    removeBox(index);
+                    removeBox(index,context);
                   } else if (value == 2) {
                     renameBox(context, index);
                   }
@@ -103,6 +102,8 @@ class _PlayListScreenState extends State<PlayListScreen> {
   }
 
   var size, height, width;
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +142,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                 Padding(
                     padding: const EdgeInsets.only(top: 130, right: 25),
                     child: IconButton(
-                        onPressed: () => alertBox(),
+                        onPressed: () => alertBox(context),
                         icon: const Icon(Icons.add_circle_outline,
                             size: 60, color: Colors.black))),
                 const Padding(
@@ -191,7 +192,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
     );
   }
 
-  void alertBox() {
+  void alertBox(context) {
     final myController = TextEditingController(text: 'Playlist');
     showDialog(
       context: context,
@@ -220,6 +221,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
               TextButton(
                 onPressed: () {
                   createplaylist(myController.text, context);
+                    Provider.of<PlayListProvider>(context,listen: false).playListFunction();
                   Navigator.of(ctx).pop();
                 },
                 child: const Text(
@@ -282,7 +284,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
     );
   }
 
-  void removeBox(index) {
+  void removeBox(index,context) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -305,6 +307,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
               TextButton(
                 onPressed: () {
                   deletePlaylist(index);
+                    Provider.of<PlayListProvider>(context,listen: false).playListFunction();
                   Navigator.of(ctx).pop();
                 },
                 child: const Text(

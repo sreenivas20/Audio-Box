@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/semantics.dart';
 // import 'package:flutter/src/widgets/framework.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:musicplayer/application/recently_provider.dart';
 import 'package:musicplayer/db_funtion/all_db_functions.dart';
 import 'package:musicplayer/db_funtion/recentlyplayed.dart';
-import 'package:musicplayer/db_funtion/songdb_model.dart';
+
 import 'package:musicplayer/screen/nowplaying_slider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:provider/provider.dart';
 import 'package:text_scroll/text_scroll.dart';
 // import 'package:flutter/src/widgets/placeholder.dart';
 
@@ -27,31 +29,11 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
     });
   }
 
-  final List<RecentlyPlayed> recentplay = [];
-  final box = RecentlyPlayedBox.getInstance();
-  List<Audio> rcentplay = [];
+ 
   final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer.withId('0');
-  @override
-  void initState() {
-    // TODO: implement initState
-    final List<RecentlyPlayed> recentlyplayed =
-        box.values.toList().reversed.toList();
-    for (var item in recentlyplayed) {
-      rcentplay.add(
-        Audio.file(
-          item.songurl.toString(),
-          metas: Metas(
-            artist: item.artist,
-            title: item.songname,
-            id: item.id.toString(),
-          ),
-        ),
-      );
-    }
-    super.initState();
-  }
-
+ 
   Widget customList(cover, musicName, sub, recentIndex, Recentplayed, rsongs) {
+    final recentpro = Provider.of<RecentlyPlayedProvider>(context);
     RecentlyPlayed songs = Recentplayed[recentIndex];
     return Padding(
       padding: const EdgeInsets.only(top: 12.0, left: 15, right: 20),
@@ -75,7 +57,7 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
             onTap: () {
               FocusManager.instance.primaryFocus?.unfocus();
               _audioPlayer.open(
-                Playlist(audios: rcentplay, startIndex: recentIndex),
+                Playlist(audios: recentpro.rcentplay, startIndex: recentIndex),
                 headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplugPlayOnPlug,
                 showNotification: true,
               );
@@ -98,27 +80,7 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
               sub,
               style: TextStyle(color: Colors.white),
             ),
-            // trailing: Row(
-            //   mainAxisSize: MainAxisSize.min,
-            //   children: [
-            //     PopupMenuButton(
-            //       color: Colors.white,
-            //       itemBuilder: (context) {
-            //         return [
-            //           const PopupMenuItem(
-            //             value: 1,
-            //             child: Text('Remove songs'),
-            //           ),
-            //         ];
-            //       },
-            //       onSelected: (value) {
-            //         if (value == 1) {
-            //           removeBox();
-            //         }
-            //       },
-            //     ),
-            //   ],
-            // ),
+           
           ),
         ),
       ),
@@ -134,6 +96,9 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<RecentlyPlayedProvider>(context,listen: false).recentlyPlayer();
+    });
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.transparent,
@@ -164,45 +129,38 @@ class _RecentlyPlayedScreenState extends State<RecentlyPlayedScreen> {
               ],
             ),
           ),
-          child: Container(
-            child: ValueListenableBuilder<Box<RecentlyPlayed>>(
-                valueListenable: box.listenable(),
-                builder: ((context, Box<RecentlyPlayed> recentDb, chlid) {
-                  List<RecentlyPlayed> Recentplayed =
-                      recentDb.values.toList().reversed.toList();
-                  return Recentplayed.isNotEmpty
-                      ? ListView.builder(
-                          itemCount: Recentplayed.length,
-                          itemBuilder: ((context, recentIndex) {
-                            RecentlyPlayed? rsongs;
-                            return customList(
-                                QueryArtworkWidget(
-                                  keepOldArtwork: true,
-                                  id: Recentplayed[recentIndex].id!,
-                                  type: ArtworkType.AUDIO,
-                                  nullArtworkWidget: ClipRRect(
-                                    child: Image.asset(
-                                        'assets/logo_music_player-removebg-preview.png'),
-                                  ),
-                                ),
-                                Recentplayed[recentIndex].songname!,
-                                Recentplayed[recentIndex].artist ?? "No Artist",
-                                recentIndex,
-                                Recentplayed,
-                                rsongs);
-                          }),
-                        )
-                      : const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              "You Have't played any songs",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        );
-                })),
-          ),
+          child: Container(child: Consumer<RecentlyPlayedProvider>(
+            builder: (context, value, child) {
+              final recentplayed = value.recentlyplayed;
+              if (recentplayed.isEmpty) {
+                return const Center(
+                  child: Text("List is empty"),
+                );
+              }
+
+              return ListView.builder(
+                itemCount: recentplayed.length,
+                itemBuilder: ((context, recentIndex) {
+                  RecentlyPlayed? rsongs;
+                  return customList(
+                      QueryArtworkWidget(
+                        keepOldArtwork: true,
+                        id: recentplayed[recentIndex].id!,
+                        type: ArtworkType.AUDIO,
+                        nullArtworkWidget: ClipRRect(
+                          child: Image.asset(
+                              'assets/logo_music_player-removebg-preview.png'),
+                        ),
+                      ),
+                      recentplayed[recentIndex].songname!,
+                      recentplayed[recentIndex].artist ?? "No Artist",
+                      recentIndex,
+                      recentplayed,
+                      rsongs);
+                }),
+              );
+            },
+          )),
         ),
       ),
       bottomSheet: NowPlayingSlider(),

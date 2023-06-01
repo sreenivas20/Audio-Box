@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:musicplayer/application/favorate_provider.dart';
+import 'package:musicplayer/application/favoritepage_provider.dart';
+import 'package:musicplayer/application/homescreen.dart';
+import 'package:musicplayer/application/mostlyplated_provider.dart';
+import 'package:musicplayer/application/playlist_provider.dart';
+import 'package:musicplayer/application/recently_provider.dart';
+import 'package:musicplayer/application/search_provider.dart';
+import 'package:musicplayer/application/splashscreen_provider.dart';
 // import 'package:just_audio_background/just_audio_background.dart';
 import 'package:musicplayer/db_funtion/all_db_functions.dart';
 import 'package:musicplayer/db_funtion/favorate_db_model.dart';
@@ -9,6 +17,7 @@ import 'package:musicplayer/db_funtion/recentlyplayed.dart';
 import 'package:musicplayer/db_funtion/songdb_model.dart';
 // import 'package:musicplayer/screen/homescreen.dart';
 import 'package:musicplayer/screen/splashscreen.dart';
+import 'package:provider/provider.dart';
 // import 'package:musicplayer/screens/splashscreen.dart';
 
 // import 'splashscreen.dart';s
@@ -41,13 +50,41 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Audio Box",
-      theme: ThemeData(
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => SplashScreenProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => HomeScreenProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => FavoriteProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SearchProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => FavoritePageProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => RecentlyPlayedProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => MostlyPlayedProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => PlayListProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: "Audio Box",
+        theme: ThemeData(
+          useMaterial3: true,
+        ),
+        home: const SplashScreen(),
       ),
-      home: const SplashScreen(),
     );
   }
 }

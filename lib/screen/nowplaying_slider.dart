@@ -9,6 +9,7 @@ import 'package:musicplayer/screen/playingscreen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:text_scroll/text_scroll.dart';
 
+// ignore: must_be_immutable
 class NowPlayingSlider extends StatefulWidget {
   NowPlayingSlider({super.key});
 

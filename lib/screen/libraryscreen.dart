@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:musicplayer/screen/favoratiescreen.dart';
 import 'package:musicplayer/screen/mostlyplayed.dart';
 import 'package:musicplayer/screen/playlistscrren.dart';
@@ -86,7 +85,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               'Playlist',
               IconButton(
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (ctx) => const PlayListScreen())),
+                    builder: (ctx) =>  PlayListScreen())),
                 icon: const Icon(
                   Icons.arrow_forward_ios,
                   color: Colors.white,
@@ -137,7 +136,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
               'Mostly Played',
               IconButton(
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (ctx) => const MostlyPlayedScreen())),
+                    builder: (ctx) =>  MostlyPlayedScreen())),
                 icon: const Icon(
                   Icons.arrow_forward_ios,
                   color: Colors.white,

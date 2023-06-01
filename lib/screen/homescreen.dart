@@ -4,7 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:musicplayer/application/favorate_provider.dart';
+import 'package:musicplayer/application/homescreen.dart';
+import 'package:musicplayer/application/playlist_provider.dart';
 import 'package:musicplayer/db_funtion/all_db_functions.dart';
 import 'package:musicplayer/db_funtion/mostlyplayed.dart';
 import 'package:musicplayer/db_funtion/playlistmodel.dart';
@@ -12,7 +14,6 @@ import 'package:musicplayer/db_funtion/recentlyplayed.dart';
 import 'package:musicplayer/db_funtion/songdb_model.dart';
 import 'package:musicplayer/screen/aboutus.dart';
 import 'package:musicplayer/screen/favoratiescreen.dart';
-import 'package:musicplayer/screen/functions/addtofavourites.dart';
 import 'package:musicplayer/screen/functions/createplaylist.dart';
 import 'package:musicplayer/screen/nowplaying_slider.dart';
 import 'package:musicplayer/screen/playingscreen.dart';
@@ -20,94 +21,35 @@ import 'package:musicplayer/screen/playlistscrren.dart';
 import 'package:musicplayer/screen/popup.dart';
 import 'package:musicplayer/screen/recentlyplayed.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'mostlyplayed.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+// ignore: must_be_immutable
+class HomePage extends StatelessWidget {
+  HomePage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-bool isFavorite = false;
-bool isPlaying = false;
-
-final int playingIndex = 0;
-final alldbsongs = SongBox.getInstance();
-List<Songs> allDbSongs = alldbsongs.values.toList();
-final songbox = SongBox.getInstance();
-final AssetsAudioPlayer audioPlayer2 = AssetsAudioPlayer.withId('0');
-List<MostPlayed> allmostplayedsong = mostPlayedSongs.values.toList();
-
-class _HomePageState extends State<HomePage> {
   final playlistbox = PlaylistSongsbox.getInstance();
+
   final List<PlaylistSongs> playlistsong1 = [];
-  List<Audio> convertedAudios = [];
+
+  // List<Audio> convertedAudios = [];
   final songbox1 = SongBox.getInstance();
+
   List<Audio> reaudioList = [];
-  @override
-  void initState() {
-    List<Songs> dbsongs = songbox.values.toList();
-    for (var item in dbsongs) {
-      convertedAudios.add(
-        Audio.file(
-          item.songUrl!,
-          metas: Metas(
-            title: item.songname,
-            artist: item.artist,
-            id: item.id.toString(),
-          ),
-        ),
-      );
-    }
-    super.initState();
-  }
 
-  Future<void> handleRefresh() async {
-    try {
-      // final box = await Hive.openBox('songs');
-      final allSongs = await _audioQuery.querySongs();
-      final mp3Songs =
-          allSongs.where((song) => song.fileExtension == 'mp3').toList();
-      final songObjects = mp3Songs
-          .map((song) => Songs(
-              songname: song.title,
-              artist: song.artist,
-              duration: song.duration,
-              songUrl: song.uri,
-              id: song.id))
-          .toList();
-
-      final existingSongIds = box.keys.cast<int>().toSet();
-      final newSongObjects = songObjects
-          .where((song) => !existingSongIds.contains(song.id))
-          .toList();
-
-      await box.clear(); // delete all songs from the database
-      await box
-          .addAll(newSongObjects); // add only the new songs to the database
-    } catch (e) {
-      print('Error in handleRefresh: $e');
-      rethrow;
-    }
-  }
+  
 
   final _audioQuery = new OnAudioQuery();
+
   // final AudioPlayer _audioPlayer = AudioPlayer();
   List<SongModel> allSongs = [];
 
   var size, height, width;
 
-  Widget customList(
-    String? musicName,
-    imagecover,
-    String sub,
-    index,
-    allDbsongs,
-    rsongs,
-    mostsong,
-  ) {
+  Widget customList(String? musicName, imagecover, String sub, index,
+      allDbsongs, rsongs, mostsong, context) {
+    final dbPro = Provider.of<FavoriteProvider>(context);
     // MostPlayed mostsong = allmostplayedsong[index];
     Songs songs = allDbsongs[index];
     return Padding(
@@ -124,8 +66,7 @@ class _HomePageState extends State<HomePage> {
               Colors.transparent,
               // Colors.orange
             ],
-            // begin: Alignment.bottomRight,
-            // end: Alignment.topRight,
+           
           ),
         ),
         child: Center(
@@ -133,7 +74,9 @@ class _HomePageState extends State<HomePage> {
             onTap: () {
               PlayingScreen.playingNowIndex.value = index;
               audioPlayer2.open(
-                  Playlist(audios: convertedAudios, startIndex: index),
+                  Playlist(
+                      audios: HomeScreenProvider.convertedAudios,
+                      startIndex: index),
                   headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplugPlayOnPlug,
                   showNotification: true,
                   loopMode: LoopMode.playlist);
@@ -171,7 +114,9 @@ class _HomePageState extends State<HomePage> {
                   onPressed: () async {
                     PlayingScreen.playingNowIndex.value = index;
                     audioPlayer2.open(
-                      Playlist(audios: convertedAudios, startIndex: index),
+                      Playlist(
+                          audios: HomeScreenProvider.convertedAudios,
+                          startIndex: index),
                       headPhoneStrategy:
                           HeadPhoneStrategy.pauseOnUnplugPlayOnPlug,
                       showNotification: true,
@@ -191,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                         value: 1,
                         child: Row(
                           children: [
-                            checkFavoritesStatus(songs.id, BuildContext)
+                            dbPro.checkFavoritesStatus(songs.id, BuildContext)
                                 ? const Icon(
                                     Icons.favorite_outline,
                                   )
@@ -202,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                             const SizedBox(
                               width: 5,
                             ),
-                            checkFavoritesStatus(songs.id, BuildContext)
+                            dbPro.checkFavoritesStatus(songs.id, BuildContext)
                                 ? const Text(
                                     'Add to favourite',
                                     style: TextStyle(color: Colors.red),
@@ -212,10 +157,10 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                       ),
-                      PopupMenuItem(
+                      const PopupMenuItem(
                         value: 2,
                         child: Row(
-                          children: const [
+                          children: [
                             Icon(Icons.playlist_add),
                             SizedBox(
                               width: 6,
@@ -228,15 +173,15 @@ class _HomePageState extends State<HomePage> {
                   },
                   onSelected: (value) {
                     if (value == 1) {
-                      if (checkFavoritesStatus(songs.id, BuildContext)) {
-                        addToFavourite(songs.id);
+                      if (dbPro.checkFavoritesStatus(songs.id, BuildContext)) {
+                        dbPro.addToFavourite(songs.id);
 
-                        final snackBar = SnackBar(
-                          duration: const Duration(seconds: 1),
+                        const snackBar = SnackBar(
+                          duration: Duration(milliseconds: 500),
                           content: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8.0),
                             child: Row(
-                              children: const [
+                              children: [
                                 Icon(
                                   Icons.favorite,
                                   color: Colors.white,
@@ -253,17 +198,18 @@ class _HomePageState extends State<HomePage> {
                           backgroundColor: Colors.black,
                           dismissDirection: DismissDirection.down,
                           elevation: 10,
-                          padding: const EdgeInsets.only(top: 10, bottom: 15),
+                          padding: EdgeInsets.only(top: 10, bottom: 15),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      } else if (!checkFavoritesStatus(
+                      } else if (!dbPro.checkFavoritesStatus(
                           songs.id, BuildContext)) {
-                        removeFavSong(songs.id);
-                        final snackBar = SnackBar(
+                        dbPro.removeFavSong(songs.id);
+                        const snackBar = SnackBar(
+                          duration: Duration(milliseconds: 500),
                           content: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8.0),
                             child: Row(
-                              children: const [
+                              children: [
                                 Icon(
                                   Icons.favorite_outline,
                                   color: Colors.white,
@@ -283,7 +229,7 @@ class _HomePageState extends State<HomePage> {
                           backgroundColor: Colors.black,
                           dismissDirection: DismissDirection.down,
                           elevation: 10,
-                          padding: const EdgeInsets.only(top: 10, bottom: 15),
+                          padding:  EdgeInsets.only(top: 10, bottom: 15),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
@@ -291,11 +237,11 @@ class _HomePageState extends State<HomePage> {
                         log('${allDbSongs[index].songname}');
                       }
 
-                      setState(() {
-                        isFavorite = !isFavorite;
-                      });
+                      // setState(() {
+                      //   isFavorite = !isFavorite;
+                      // });
                     } else if (value == 2) {
-                      bottomSheetfun(index);
+                      bottomSheetfun(index, context);
                     }
                   },
                 ),
@@ -307,7 +253,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void alertBox() {
+  void alertBox(context) {
     final myController = TextEditingController(text: 'Playlist');
     showDialog(
       context: context,
@@ -337,6 +283,8 @@ class _HomePageState extends State<HomePage> {
               TextButton(
                 onPressed: () {
                   createplaylist(myController.text, context);
+                  Provider.of<PlayListProvider>(context, listen: false)
+                      .playListFunction();
                   Navigator.of(ctx).pop();
                 },
                 child: const Text(
@@ -351,13 +299,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void quitBox() {
+  void quitBox(context) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text("Quit "),
-        content: Text('Are you sure'),
+        content: const Text('Are you sure'),
         actions: <Widget>[
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -389,6 +337,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    log("Builder");
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<PlayListProvider>(context, listen: false).playListFunction();
+    });
+    Provider.of<HomeScreenProvider>(context).initFunction();
     size = MediaQuery.of(context).size;
     height = size.height;
     width = size.width;
@@ -400,17 +353,10 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => PlayingScreen(),
-                  )),
-              icon: const Icon(
-                Icons.music_note,
-                color: Colors.white,
-              ))
-        ],
+        title: const Text(
+          'Home',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       drawer: Drawer(
         backgroundColor: Colors.blueGrey.shade900,
@@ -452,7 +398,6 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
-                
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => const AboutUs(),
                 ));
@@ -495,7 +440,7 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(color: Colors.white),
               ),
               onTap: () {
-                quitBox();
+                quitBox(context);
               },
             ),
             SizedBox(
@@ -510,270 +455,270 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: LiquidPullToRefresh(
-        borderWidth: 2.0,
-        color: Colors.white,
-        backgroundColor: Colors.black,
-        height: 100,
-        onRefresh: handleRefresh,
-        child: Stack(children: [
-          Container(
-            height: MediaQuery.of(context).size.height,
-            // height: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.blueGrey.shade300,
-                  Colors.black,
-                  Colors.black,
-                  Colors.black
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 110,
-                  ),
-                  Container(
-                    height: height * 0.190,
-                    child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        shrinkWrap: true,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10, right: 20),
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: width * 0.450,
-                                  height: height * 0.150,
-                                  child: InkWell(
-                                    onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (ctx) =>
-                                                const PlayListScreen())),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          image: const DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                'assets/playstlist image.jpeg',
-                                              ))),
-                                    ),
-                                  ),
-                                ),
-                                // boxSize(10, 0),
-                                const Text(
-                                  'PlayList',
-                                  style: TextStyle(
-                                      fontSize: 20, color: Colors.white),
-                                )
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 1, right: 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: width * 0.450,
-                                  height: height * 0.150,
-                                  child: InkWell(
-                                    onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (ctx) =>
-                                                FavoriteScreen())),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          image: const DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                'assets/liked images.png',
-                                              ))),
-                                    ),
-                                  ),
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 30.0),
-                                  child: Text(
-                                    'Liked Songs',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: width * 0.450,
-                                  height: height * 0.150,
-                                  child: InkWell(
-                                    onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (ctx) =>
-                                                const MostlyPlayedScreen())),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          image: const DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                'assets/Mostly played.jpeg',
-                                              ))),
-                                    ),
-                                  ),
-                                ),
-                                const Text(
-                                  'Mostly Played',
-                                  style: TextStyle(
-                                      fontSize: 20, color: Colors.white),
-                                )
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10, right: 10),
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: width * 0.450,
-                                  height: height * 0.150,
-                                  child: InkWell(
-                                    onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (ctx) =>
-                                                const RecentlyPlayedScreen())),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          image: const DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                'assets/recently-played.png',
-                                              ))),
-                                    ),
-                                  ),
-                                ),
-                                const Text(
-                                  'Recently Played',
-                                  style: TextStyle(
-                                      fontSize: 20, color: Colors.white),
-                                )
-                              ],
-                            ),
-                          ),
-                        ]),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 22.0, top: 10, bottom: 10, right: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      // ignore: prefer_const_literals_to_create_immutables
-                      children: [
-                        const Text(
-                          'Songs',
-                          style: TextStyle(color: Colors.white, fontSize: 30),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            PlayingScreen.playingNowIndex.value = playingIndex;
-                            audioPlayer2.open(
-                                Playlist(
-                                    audios: convertedAudios,
-                                    startIndex: playingIndex),
-                                headPhoneStrategy:
-                                    HeadPhoneStrategy.pauseOnUnplugPlayOnPlug,
-                                showNotification: true,
-                                loopMode: LoopMode.playlist);
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (ctx) => PlayingScreen()));
-                          },
-                          child: const CircleAvatar(
-                            backgroundColor: Colors.white,
-                            maxRadius: 25,
-                            child: Icon(
-                              Icons.play_arrow,
-                              size: 30,
-                              color: Colors.black,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  // const SizedBox(
-                  //   height: 10,
-                  // ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 0),
-                    child: Container(
-                      child: ValueListenableBuilder<Box<Songs>>(
-                          valueListenable: songbox.listenable(),
-                          builder: ((context, allsongbox, child) {
-                            List<Songs> allDbsongs = allsongbox.values.toList();
-
-                            return ListView.builder(
-                              padding: EdgeInsets.only(top: 10),
-                              physics: const NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: allDbsongs.length,
-                              itemBuilder: ((context, index) {
-                                RecentlyPlayed? rsongs;
-                                MostPlayed mostsong = allmostplayedsong[index];
-
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: customList(
-                                      allDbsongs[index].songname!,
-                                      QueryArtworkWidget(
-                                        id: allDbsongs[index].id!,
-                                        type: ArtworkType.AUDIO,
-                                        nullArtworkWidget: ClipRRect(
-                                          child: Image.asset(
-                                              'assets/logo_music_player-removebg-preview.png'),
-                                        ),
-                                      ),
-                                      allDbsongs[index].artist ?? "No Artist",
-                                      index,
-                                      allDbsongs,
-                                      rsongs,
-                                      mostsong),
-                                );
-                              }),
-                            );
-                          })),
-                    ),
-                  ),
-                ],
-              ),
+      body: Stack(children: [
+        Container(
+          height: MediaQuery.of(context).size.height,
+          // height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.blueGrey.shade300,
+                Colors.black,
+                Colors.black,
+                Colors.black
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
-        ]),
-      ),
+
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 110,
+                ),
+                Container(
+                  height: height * 0.190,
+                  child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      shrinkWrap: true,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10, right: 20),
+                          child: Column(
+                            children: [
+                              Container(
+                                width: width * 0.450,
+                                height: height * 0.150,
+                                child: InkWell(
+                                  onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (ctx) => PlayListScreen())),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        image: const DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: AssetImage(
+                                              'assets/playstlist image.jpeg',
+                                            ))),
+                                  ),
+                                ),
+                              ),
+                              // boxSize(10, 0),
+                              const Text(
+                                'PlayList',
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              )
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 1, right: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: width * 0.450,
+                                height: height * 0.150,
+                                child: InkWell(
+                                  onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (ctx) => FavoriteScreen())),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        image: const DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: AssetImage(
+                                              'assets/liked images.png',
+                                            ))),
+                                  ),
+                                ),
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.only(left: 30.0),
+                                child: Text(
+                                  'Liked Songs',
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.white),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Column(
+                            children: [
+                              Container(
+                                width: width * 0.450,
+                                height: height * 0.150,
+                                child: InkWell(
+                                  onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (ctx) =>
+                                              MostlyPlayedScreen())),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        image: const DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: AssetImage(
+                                              'assets/Mostly played.jpeg',
+                                            ))),
+                                  ),
+                                ),
+                              ),
+                              const Text(
+                                'Mostly Played',
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              )
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10, right: 10),
+                          child: Column(
+                            children: [
+                              Container(
+                                width: width * 0.450,
+                                height: height * 0.150,
+                                child: InkWell(
+                                  onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (ctx) =>
+                                              const RecentlyPlayedScreen())),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        image: const DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: AssetImage(
+                                              'assets/recently-played.png',
+                                            ))),
+                                  ),
+                                ),
+                              ),
+                              const Text(
+                                'Recently Played',
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              )
+                            ],
+                          ),
+                        ),
+                      ]),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 22.0, top: 10, bottom: 10, right: 30),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    // ignore: prefer_const_literals_to_create_immutables
+                    children: [
+                      const Text(
+                        'Songs',
+                        style: TextStyle(color: Colors.white, fontSize: 30),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          PlayingScreen.playingNowIndex.value = playingIndex;
+                          audioPlayer2.open(
+                              Playlist(
+                                  audios: HomeScreenProvider.convertedAudios,
+                                  startIndex: playingIndex),
+                              headPhoneStrategy:
+                                  HeadPhoneStrategy.pauseOnUnplugPlayOnPlug,
+                              showNotification: true,
+                              loopMode: LoopMode.playlist);
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) => PlayingScreen()));
+                        },
+                        child: const CircleAvatar(
+                          backgroundColor: Colors.white,
+                          maxRadius: 25,
+                          child: Icon(
+                            Icons.play_arrow,
+                            size: 30,
+                            color: Colors.black,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                // const SizedBox(
+                //   height: 10,
+                // ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 0),
+                  child: Container(
+                    child:
+                        // List<Songs> allDbsongs = allsongbox.values.toList();
+
+                        Consumer<HomeScreenProvider>(
+                      builder: ((context, value, child) {
+                        log('counsumer');
+                        final dbPro = Provider.of<HomeScreenProvider>(context);
+                        final music = value.dbSongs;
+                        if (dbPro.dbSongs.isEmpty) {
+                          const Center(
+                            child: Text('Songs Not Fount'),
+                          );
+                        } else {
+                          return ListView.builder(
+                            padding: EdgeInsets.only(top: 10),
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: value.dbSongs.length,
+                            itemBuilder: ((context, index) {
+                              RecentlyPlayed? rsongs;
+                              MostPlayed mostsong = allmostplayedsong[index];
+
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: customList(
+                                    music[index].songname!,
+                                    QueryArtworkWidget(
+                                      id: music[index].id!,
+                                      type: ArtworkType.AUDIO,
+                                      nullArtworkWidget: ClipRRect(
+                                        child: Image.asset(
+                                            'assets/logo_music_player-removebg-preview.png'),
+                                      ),
+                                    ),
+                                    music[index].artist ?? "No Artist",
+                                    index,
+                                    music,
+                                    rsongs,
+                                    mostsong,
+                                    context),
+                              );
+                            }),
+                          );
+                        }
+
+                        return CircularProgressIndicator();
+                      }),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ]),
     );
   }
 
-  void bottomSheetfun(songindex) {
+  void bottomSheetfun(songindex, context) {
     final box = PlaylistSongsbox.getInstance();
     showModalBottomSheet<void>(
       context: context,
@@ -797,7 +742,9 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   IconButton(
-                      onPressed: alertBox,
+                      onPressed: () {
+                        alertBox(context);
+                      },
                       icon: const Center(
                         child: Icon(
                           Icons.add_circle_outline,
@@ -914,12 +861,12 @@ class _HomePageState extends State<HomePage> {
                         Icons.playlist_add,
                         color: Colors.white,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 5,
                       ),
                       Text(
                         'Added to ${playlistsong[index].platlistname}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                         ),
                       ),
@@ -952,7 +899,7 @@ class _HomePageState extends State<HomePage> {
                 },
                 onSelected: (value) {
                   if (value == 1) {
-                    removeBox(index);
+                    removeBox(index, context);
                   } else if (value == 2) {
                     renameBox(context, index);
                   }
@@ -1012,7 +959,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void removeBox(index) {
+  void removeBox(index, context) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -1035,6 +982,8 @@ class _HomePageState extends State<HomePage> {
               TextButton(
                 onPressed: () {
                   deletePlaylist(index);
+                  Provider.of<PlayListProvider>(context, listen: false)
+                      .playListFunction();
                   Navigator.of(ctx).pop();
                 },
                 child: const Text(
@@ -1049,3 +998,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+// 
+final int playingIndex = 0;
+final alldbsongs = SongBox.getInstance();
+List<Songs> allDbSongs = alldbsongs.values.toList();
+final songbox = SongBox.getInstance();
+final AssetsAudioPlayer audioPlayer2 = AssetsAudioPlayer.withId('0');
+List<MostPlayed> allmostplayedsong = mostPlayedSongs.values.toList();

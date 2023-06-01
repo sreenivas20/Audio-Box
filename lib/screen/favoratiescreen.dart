@@ -1,53 +1,29 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:musicplayer/db_funtion/favorate_db_model.dart';
-import 'package:musicplayer/screen/functions/addtofavourites.dart';
+import 'package:lottie/lottie.dart';
+import 'package:musicplayer/application/favorate_provider.dart';
+import 'package:musicplayer/application/favoritepage_provider.dart';
+
 import 'package:musicplayer/screen/nowplaying_slider.dart';
 // import 'package:musicplayer/screen/homescreen.dart';
 import 'package:musicplayer/screen/playingscreen.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:provider/provider.dart';
 
-class FavoriteScreen extends StatefulWidget {
-  const FavoriteScreen({super.key});
-
-  @override
-  State<FavoriteScreen> createState() => _FavoriteScreenState();
-}
-
-final _audioPlayer = AssetsAudioPlayer.withId('0');
-
-class _FavoriteScreenState extends State<FavoriteScreen> {
-  final List<Favourites> favourite = [];
-  final box = FavSongBox.getInstance();
-  late List<Favourites> favouritesongs = box.values.toList();
-  bool isalready = true;
-  List<Audio> favSongs = [];
+// ignore: must_be_immutable
+class FavoriteScreen extends StatelessWidget {
+  FavoriteScreen({super.key});
 
   int currentIndex = 0;
 
   @override
-  void initState() {
-    final List<Favourites> favouritesongs1 =
-        box.values.toList().reversed.toList();
-    for (var element in favouritesongs1) {
-      favSongs.add(
-        Audio.file(
-          element.songUrl.toString(),
-          metas: Metas(
-            artist: element.artist,
-            title: element.songname,
-            id: element.id.toString(),
-          ),
-        ),
-      );
-    }
-    setState(() {});
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<FavoritePageProvider>(context, listen: false)
+          .initStateProviderFav();
+    });
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
@@ -99,50 +75,59 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 200),
-            child: ValueListenableBuilder<Box<Favourites>>(
-                valueListenable: box.listenable(),
-                builder: (context, favouriteDb, child) {
-                  List<Favourites> favouritesongs =
-                      favouriteDb.values.toList().reversed.toList();
-                  return favouritesongs.isNotEmpty
-                      ? (ListView.builder(
-                          padding: const EdgeInsets.only(top: 12),
-                          shrinkWrap: true,
-                          itemCount: favouritesongs.length,
-                          physics: const BouncingScrollPhysics(),
-                          itemBuilder: ((context, index) => Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: customList(
-                                    favouritesongs[index].songname!,
-                                    QueryArtworkWidget(
-                                      id: favouritesongs[index].id!,
-                                      type: ArtworkType.AUDIO,
-                                      nullArtworkWidget: ClipRRect(
-                                        child: Image.asset(
-                                            'assets/logo_music_player-removebg-preview.png'),
-                                      ),
-                                    ),
-                                    favouritesongs[index].artist ??
-                                        " No Artist",
-                                    index),
-                              )),
-                        ))
-                      : const Center(
-                          child: Text(
-                            "You haven't Liked any songs!",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        );
-                }),
-          )
+              padding: const EdgeInsets.only(top: 200),
+              child: Consumer<FavoritePageProvider>(
+                  builder: ((context, value, child) {
+                // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                // });
+
+                final favDb = value.favouritesongs1;
+                if (favDb.isEmpty) {
+                  return Padding(
+                    padding:
+                        const EdgeInsets.only(right: 80.0, top: 52, left: 0),
+                    child: SizedBox(
+                      child: Lottie.network(
+                          'https://assets6.lottiefiles.com/packages/lf20_lwnuxmxm.json',
+                          height: 400,
+                          width: 400,
+                          fit: BoxFit.cover),
+                    ),
+                  );
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.only(top: 12),
+                  shrinkWrap: true,
+                  itemCount: favDb.length,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: ((context, index) => Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: customList(
+                            favDb[index].songname!,
+                            QueryArtworkWidget(
+                              id: favDb[index].id!,
+                              type: ArtworkType.AUDIO,
+                              nullArtworkWidget: ClipRRect(
+                                child: Image.asset(
+                                    'assets/logo_music_player-removebg-preview.png'),
+                              ),
+                            ),
+                            favDb[index].artist ?? " No Artist",
+                            index,
+                            context),
+                      )),
+                );
+              })))
         ],
       ),
       bottomSheet: NowPlayingSlider(),
     );
   }
 
-  Widget customList(String? musicName, imagecover, String sub, index) {
+  Widget customList(String? musicName, imagecover, String sub, index, context) {
+    final dbPro = Provider.of<FavoriteProvider>(context);
+    final favdb = Provider.of<FavoritePageProvider>(context);
+
     return Padding(
       padding: const EdgeInsets.only(left: 15, right: 15),
       child: Container(
@@ -164,7 +149,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               PlayingScreen.playingNowIndex.value = index;
 
               _audioPlayer.open(
-                Playlist(audios: favSongs, startIndex: index),
+                Playlist(audios: favdb.favSongs, startIndex: index),
                 showNotification: true,
                 headPhoneStrategy: HeadPhoneStrategy.pauseOnUnplug,
               );
@@ -189,9 +174,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               children: [
                 IconButton(
                     onPressed: () {
-                      setState(() {
-                        deleteFavSongs(index, context);
-                      });
+                      dbPro.deleteFavSongs(index, context);
+
                       final snackBar = SnackBar(
                         duration: const Duration(seconds: 1),
                         content: Padding(
@@ -229,21 +213,6 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       ),
     );
   }
-
-  // onPlay() {
-  //   final List<Favourites> favouritesongs1 =
-  //       box.values.toList().reversed.toList();
-  //   for (var element in favouritesongs1) {
-  //     favSongs.add(
-  //       Audio.file(
-  //         element.songUrl.toString(),
-  //         metas: Metas(
-  //           artist: element.artist,
-  //           title: element.songname,
-  //           id: element.id.toString(),
-  //         ),
-  //       ),
-  //     );
-  //   }
-  // }
 }
+
+final _audioPlayer = AssetsAudioPlayer.withId('0');

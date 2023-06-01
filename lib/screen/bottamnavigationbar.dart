@@ -10,6 +10,7 @@ import 'package:musicplayer/screen/libraryscreen.dart';
 import 'package:musicplayer/screen/searchscreen.dart';
 
 // import 'package:musicplayer/screen/homepage/
+ValueNotifier<int> indexChangeNotifier = ValueNotifier(0);
 
 class BottamNavigationScreen extends StatefulWidget {
   const BottamNavigationScreen({super.key});
@@ -21,7 +22,7 @@ class BottamNavigationScreen extends StatefulWidget {
 class _BottamNavigationScreenState extends State<BottamNavigationScreen> {
   late List<Map<String, Widget>> _pages;
   int currentIndex = 0;
-  int _selectedPageindex = 0; // final screen = [
+   // final screen = [
   //   HomeScreen(),
   //   SearchScreen(),
   //   FavoriteScreen(),
@@ -32,10 +33,10 @@ class _BottamNavigationScreenState extends State<BottamNavigationScreen> {
   void initState() {
     _pages = [
       {
-        'pages': const HomePage(),
+        'pages':  HomePage(),
       },
       {
-        'pages': const SearchScreen(),
+        'pages':  SearchScreen(),
       },
       {
         'pages': const LibraryScreen(),
@@ -44,76 +45,76 @@ class _BottamNavigationScreenState extends State<BottamNavigationScreen> {
     super.initState();
   }
 
-  void _selectpage(int index) {
-    setState(() {
-      _selectedPageindex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: _pages[_selectedPageindex]['pages'],
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(0.0),
-        child: BottomNavigationBar(
-          selectedFontSize: 0.0,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          onTap: _selectpage,
-          backgroundColor: Colors.black,
-          unselectedItemColor: const Color.fromARGB(255, 28, 53, 64),
-          selectedItemColor: Colors.white,
-          currentIndex: _selectedPageindex,
-          items: const [
-            BottomNavigationBarItem(
-              label: 'Home',
-              icon: Icon(Icons.home),
+    return ValueListenableBuilder(
+        valueListenable: indexChangeNotifier,
+        builder: (context, int newIndex, _) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: _pages[newIndex]['pages'],
+            bottomNavigationBar: Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: BottomNavigationBar(
+                selectedFontSize: 0.0,
+                showSelectedLabels: false,
+                showUnselectedLabels: false,
+                onTap: (index) {
+                  indexChangeNotifier.value = index;
+                },
+                backgroundColor: Colors.black,
+                unselectedItemColor: const Color.fromARGB(255, 28, 53, 64),
+                selectedItemColor: Colors.white,
+                currentIndex: newIndex,
+                items: const [
+                  BottomNavigationBarItem(
+                    label: 'Home',
+                    icon: Icon(Icons.home),
+                  ),
+                  // BottomNavigationBarItem(
+                  //   label: 'Liked Songs',
+                  //   icon: Icon(Icons.favorite_outline),
+                  // ),
+                  BottomNavigationBarItem(
+                    activeIcon: null,
+                    label: 'Search',
+                    icon: Icon(Icons.search),
+                  ),
+                  // BottomNavigationBarItem(
+                  //   label: 'Playlist',
+                  //   icon: Icon(Icons.playlist_add),
+                  // ),
+                  BottomNavigationBarItem(
+                    label: 'Lyibrary',
+                    // activeIcon : null,
+                    icon: Icon(Icons.library_books_rounded),
+                  ),
+                ],
+              ),
             ),
-            // BottomNavigationBarItem(
-            //   label: 'Liked Songs',
-            //   icon: Icon(Icons.favorite_outline),
+            // floatingActionButtonLocation:
+            //     FloatingActionButtonLocation.miniCenterDocked,
+            // floatingActionButton: Padding(
+            //   padding: const EdgeInsets.all(0.0),
+            //   child: FloatingActionButton(
+            //     shape: const CircleBorder(),
+            //     backgroundColor: Colors.blueGrey.shade800,
+            //     hoverElevation: 20,
+            //     splashColor: Colors.black,
+            //     tooltip: 'Search',
+            //     elevation: 0,
+            //     child: const Icon(
+            //       Icons.search,
+            //       color: Colors.white,
+            //     ),
+            //     onPressed: () => setState(
+            //       () {
+            //         newIndex = 1;
+            //       },
+            //     ),
+            //   ),
             // ),
-            BottomNavigationBarItem(
-              activeIcon: null,
-              label: 'Search',
-              icon: Icon(null),
-            ),
-            // BottomNavigationBarItem(
-            //   label: 'Playlist',
-            //   icon: Icon(Icons.playlist_add),
-            // ),
-            BottomNavigationBarItem(
-              label: 'Lyibrary',
-              // activeIcon : null,
-              icon: Icon(Icons.library_books_rounded),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.miniCenterDocked,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(0.0),
-        child: FloatingActionButton(
-          shape: const CircleBorder(),
-          backgroundColor: Colors.blueGrey.shade800,
-          hoverElevation: 20,
-          splashColor: Colors.black,
-          tooltip: 'Search',
-          elevation: 0,
-          child: const Icon(
-            Icons.search,
-            color: Colors.white,
-          ),
-          onPressed: () => setState(
-            () {
-              _selectedPageindex = 1;
-            },
-          ),
-        ),
-      ),
-    );
+          );
+        });
   }
 }
